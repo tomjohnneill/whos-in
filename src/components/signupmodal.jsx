@@ -8,30 +8,60 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import CircularProgress from 'material-ui/CircularProgress';
 import Subheader from 'material-ui/Subheader';
+import {Plant, Spiral} from './icons.jsx';
+import {Link, browserHistory} from 'react-router';
 
+const styles = {
+  number: {
+    color: '#FF9800',
+    fontSize: '20px',
+  },
+  bottomBit: {
+    color: grey500,
+    marginTop: '-5px',
+    fontSize: '12px'
+  },
+  textfield: {
+    height: '40px',
+    fontsize: '20px'
+  }
+}
 
 export default  class SignupModal extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {login: true, loading: false}
+    this.state = {type: 'signup', loading: false}
   }
 
-  handleSwitchType = (e) => {
-    e.preventDefault()
-    var login = this.state.login
-    this.setState({login: !login})
+  handleName = (e,  newValue) => {
+    this.setState({name: newValue})
   }
 
-  handleFacebookJoin = (e) => {
 
+  handleEmail = (e, newValue) => {
+    this.setState({email: newValue})
   }
 
-  handleEmailLogin = (e) => {
-    var body = {'email': this.state.email, 'password': this.state.password}
+  handlePassword = (e, newValue) => {
+    this.setState({password: newValue})
+  }
 
-    e.preventDefault()
-    fetch('https://api.worktools.io/api/_/authenticate/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7', {
+  handleCreateAccount = () => {
+    var body = {
+      'Name' : this.state.name,
+      'Email' : this.state.email,
+      'Password': this.state.password,
+      'External User' : 'True',
+      'Role' : 'Volunteer'
+    }
+
+    var authenticate = {
+      'email': this.state.email,
+      'password' : this.state.password
+    }
+    console.log(body)
+    fetch('https://api.worktools.io/api/User/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7', {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -40,30 +70,30 @@ export default  class SignupModal extends React.Component {
       body: JSON.stringify(body)
     })
     .then(response => response.json())
+    .then(data => console.log(data[0]))
+    .then(data => fetch('https://api.worktools.io/api/_/authenticate/?api_token=8613b9b6-8d3c-44da-9592-12998754bf38', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(authenticate)
+    }))
+    .then(response => response.json())
     .then(data => localStorage.setItem('worktoolsToken', data.api_token))
     .then(data => console.log(localStorage))
-
     .then(data => this.props.onComplete())
-    .then(error => console.log(error))
-}
-
-handleEmailSignUp = (e) => {
-  this.setState({loading: false})
-}
-
-handlePassword = (e, newValue) => {
-  this.setState({password: newValue})
+    .catch(error => this.setState({ error, loading: false }));
   }
 
-handleEmail = (e, newValue) => {
-  this.setState({email: newValue})
-
-}
-
-handleName = (e, newValue) => {
-  this.setState({name: newValue})
-
-}
+  handleSwitchType = (e) => {
+    e.preventDefault()
+    if (this.state.type === 'login') {
+      this.setState({type: 'signup'})
+    } else {
+      this.setState({type: 'login'})
+    }
+  }
 
   render() {
 
@@ -73,96 +103,137 @@ handleName = (e, newValue) => {
         <Dialog
           open={this.props.open ? true : false}
           modal={false}
+
           onRequestClose={this.props.changeOpen}
-          contentStyle={{width: '90%', maxWidth: '300px'}}
+          contentStyle={{width: '90%', maxWidth: '350px'}}
           >
           {this.state.loading  ?
           <div style={{width: '100%', height: '100%', position: 'absolute', top: '0px',left: '0px',zIndex: '20', boxSizing: 'border-box', backgroundColor: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <CircularProgress/>
           </div>
           : null }
-          <div style={{fontSize: '25px', letterSpacing: '-0.6px', lineHeight: '30px', color: '#484848',
-          fontWeight: 700, textAlign: 'center'}}>
-            {this.state.login ? "Log into Who's In" : "Sign up to Who's In"}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '16px', textAlign: 'center'}} >
-            <div style={{width: '100%'}}>
-              <div style={{height: '12px'}}/>
-
-          <RaisedButton
-
-            icon={<FontIcon color='white' style={{marginRight: '16px'}} className="fa fa-facebook-official fa-2x" />}
-              secondary={true} fullWidth={true} label={this.state.login ? "Log In" : "Sign Up"}
-              onTouchTap={this.handleFacebookJoin}
-              labelStyle={{height: '36px',
-                   letterSpacing: '0.6px', fontWeight: 'bold'}}  />
-                   <div style={{fontSize: '8pt', textAlign: 'center', color:grey500, marginTop: '8px'}}>
-
-                      This does not allow us to post to Facebook without your permission
-                    </div>
-<div style={{height: '12px'}}/>
-           <div style={{width: '100%'}}>-- or --
-             </div>
+          <div>
+            {this.state.type === 'signup' ?
+          <span
+              style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
 
 
-             {this.state.login ? null :
-               <div>
-            <div style={{height: '12px'}}/>
-              <TextField underlineShow={false}
-                inputStyle={{border:"1px solid lightgrey", borderRadius: "3px",
-                  boxShadow: "1px 1px 1px 0px lightgrey", textIndent: '5px'
-                }}
-                hintText={'Full Name'}
-                hintStyle={{textIndent: '5px'}}
-                type='name'
-                id = 'fullname'
-                value={this.state.name}
-                onChange={this.handleName}
-                fullWidth={true}/>
-              </div>
+                <Plant style={{marginBottom: '16px', height: '80px'}}/>
+                <div style={{paddingBottom: '16px'}}>
+                  Create your Account
+                </div>
+                <div style={{width: '100%',  paddingBottom: '16px',
+                   boxSizing: 'border-box'}}>
+                  <TextField fullWidth={true}
+                    inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                      paddingLeft: '12px',  boxSizing: 'border-box'}}
+                    underlineShow={false}
+                    hintText={'Name'}
+                    hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                    key='name'
+                    onChange={this.handleName}
+                    style={styles.textfield}/>
+                </div>
+                <div style={{width: '100%',paddingBottom: '16px',
+                  boxSizing: 'border-box'}}>
+                  <TextField fullWidth={true}
+                    inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                      paddingLeft: '12px',  boxSizing: 'border-box'}}
+                    underlineShow={false}
+                    hintText={'Email'}
+                    onChange={this.handleEmail}
+                    hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                    key='email'
+                    style={styles.textfield}/>
+                </div>
+                <div style={{width: '100%',  paddingBottom: '16px',
+                   boxSizing: 'border-box'}}>
+                  <TextField fullWidth={true}
+                    inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                      paddingLeft: '12px',  boxSizing: 'border-box'}}
+                    underlineShow={false}
+                    onChange={this.handlePassword}
+                    type='password'
+                    hintText={'Password'}
+                    hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                    key='password'
+                    style={styles.textfield}/>
+                </div>
+                <div style={{width: '100%', boxSizing: 'border-box', backfaceVisibility: 'inherit'
+                  ,borderRadius: '10px', paddingBottom: '20px'}}>
+                  <RaisedButton fullWidth={true}
+                    backgroundColor={this.state.email && this.state.password && this.state.name ?  '#E55749' : '#C5C8C7'}
+                    buttonStyle={{borderRadius: '6px'}}
+                    onTouchTap={this.handleCreateAccount}
+                    labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center', height: '100%'}}
+                    labelColor='white' label='Complete' style={{height: '50px'}}
+                    />
+                </div>
+                <div>
+                  Or switch to <b onTouchTap={this.handleSwitchType} style={{color: '#E55749'}}>Login</b>
+                </div>
 
-            }
+          </span>
 
-              <div style={{height: '12px'}}/>
-               <TextField underlineShow={false}
-                 inputStyle={{border:"1px solid lightgrey", borderRadius: "3px",
-                   boxShadow: "1px 1px 1px 0px lightgrey", textIndent: '5px'
-                 }}
-                 hintText={'Email'}
-                 hintStyle={{textIndent: '5px'}}
-                 type='email'
-                 id='email'
-                 value={this.state.email}
-                 onChange={this.handleEmail}
-                 fullWidth={true}/>
+          :
 
-             <div style={{height: '12px'}}/>
-               <TextField fullWidth={true}
-                 underlineShow={false}
-                 inputStyle={{border:"1px solid lightgrey", borderRadius: "3px",
-                   boxShadow: "1px 1px 1px 0px lightgrey", textIndent: '5px'
-                 }}
-                 hintStyle={{textIndent: '5px'}}
-                 type='password'
-                 id='password'
-                 value={this.state.password}
-                 onChange={this.handlePassword}
-                 hintText={'Password'}
-                 />
+          <span
+              style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
 
-             <div style={{height: '12px'}}/>
 
-               <RaisedButton
-                 labelStyle={{height: '36px',
-                      letterSpacing: '0.6px', fontWeight: 'bold'}}
-                onTouchTap = {this.state.login ? this.handleEmailLogin : this.handleEmailSignUp}
-                 primary={true} fullWidth={true} label={this.state.login ? "Log In" : "Sign Up"}  />
-             </div>
+                <Spiral style={{marginBottom: '16px', height: '80px'}}/>
+                <div style={{paddingBottom: '16px'}}>
+                  Login
+                </div>
 
-           </div>
-           <div style={{textAlign: 'center', width: '100%'}}>
-             Or <b style={{width: 'auto', color: '#0068B2'}} onTouchTap={this.handleSwitchType}>{!this.state.login ? "Log In" : "Sign up"}</b>
-           </div>
+
+                <div style={{width: '100%',paddingBottom: '16px',
+                  boxSizing: 'border-box'}}>
+                  <TextField fullWidth={true}
+                    inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                      paddingLeft: '12px',  boxSizing: 'border-box'}}
+                    underlineShow={false}
+                    hintText={'Email'}
+                    onChange={this.handleEmail}
+                    hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                    key='email'
+                    style={styles.textfield}/>
+                </div>
+                <div style={{width: '100%',  paddingBottom: '16px',
+                   boxSizing: 'border-box'}}>
+                  <TextField fullWidth={true}
+                    inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                      paddingLeft: '12px',  boxSizing: 'border-box'}}
+                    underlineShow={false}
+                    onChange={this.handlePassword}
+                    type='password'
+                    hintText={'Password'}
+                    hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                    key='password'
+                    style={styles.textfield}/>
+                </div>
+                <div style={{width: '100%', boxSizing: 'border-box', backfaceVisibility: 'inherit'
+                  ,borderRadius: '10px', paddingBottom: '20px'}}>
+                  <RaisedButton fullWidth={true}
+                    backgroundColor={this.state.email && this.state.password  ?  '#E55749' : '#C5C8C7'}
+                    buttonStyle={{borderRadius: '6px'}}
+                    onTouchTap={this.handleCreateAccount}
+                    labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center', height: '100%'}}
+                    labelColor='white' label='Complete' style={{height: '50px'}}
+                    />
+                </div>
+                <div>
+                  Or switch to <b onTouchTap={this.handleSwitchType} style={{cursor: 'pointer',color: '#E55749'}}>
+                  {this.state.type === 'login' ? 'Sign up' : 'Login'}</b>
+                </div>
+
+          </span>
+
+
+        }
+
+        </div>
+
         </Dialog>
       </div>
     )

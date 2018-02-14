@@ -20,6 +20,7 @@ import FirstSummary from './components/create-project/firstsummary.jsx';
 import LinkedInAuth from './components/auth/linkedin.jsx';
 import FormBuilder from './components/admin/formbuilder.jsx'
 import CustomForm from './components/customform.jsx';
+import ProjectJoined from './components/projectjoined.jsx';
 
 const rootElement = document.getElementById('root');
 
@@ -40,6 +41,8 @@ const rootElement = document.getElementById('root');
       <Route path='/create-project/organisation' component={OrganisationLookup}/>
       <Route path='/projects/:_id/:Name/edit' component={NewProject}/>
       <Route path='/projects/:pledge/:_id' component={Project}/>
+      <Route path='/projects/:pledge/:_id/questions' component={CustomForm}/>
+      <Route path='/projects/:pledge/:_id/joined' component={ProjectJoined}/>
       <Route path='/pages/:tab/:pledge/:_id' component={Project}/>
       <Route path='/charity/:charityId' component={CharityProfile}/>
       <Route path='/' component={UserTabs}/>

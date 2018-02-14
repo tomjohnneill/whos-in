@@ -18,6 +18,7 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import MediaQuery from 'react-responsive';
 import {SignupModal} from './signupmodal.jsx';
 import TextField from 'material-ui/TextField';
+import {Plant} from './icons.jsx';
 
 const styles = {
   number: {
@@ -228,6 +229,7 @@ export default class Home extends React.Component{
                 </span>
                 <span className='back'
                     style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+                      <Plant style={{marginBottom: '16px', height: '80px'}}/>
                       <div style={{paddingBottom: '16px'}}>
                         Create your Account
                       </div>

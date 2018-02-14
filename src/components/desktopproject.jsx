@@ -192,7 +192,16 @@ export default class DesktopProject extends React.Component {
   }
 
   handleModal = (e) => {
-    this.setState({modalOpen: true})
+    if (localStorage.getItem('worktoolsToken')) {
+      if (this.props.questions) {
+        browserHistory.push(window.location.href + '/questions')
+      } else {
+        browserHistory.push(window.location.href + '/joined')
+      }
+
+    } else {
+      this.setState({modalOpen: true})
+    }
   }
 
   handleModalChangeOpen = (e) => {
@@ -235,56 +244,12 @@ export default class DesktopProject extends React.Component {
       this.state.project.Description.replace('<img', '<img style="width:100%;height:auto"') : this.state.project.Description}
   }
 
-  handleAdminDrawer = (e) => {
-    e.preventDefault()
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-  }
-
-
-  handleAnalyticsClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/analytics')
-  }
-
-  handleProjectClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/project')
-  }
-
-  handleConsoleLog = (value) => {
-
-       this.setState({selected: value})
-
-  }
-
-  handleFeedbackClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/pledged-users')
-  }
-
-  handleUserInputClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/form-builder')
-  }
-
-  handleUserListClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/user-list')
-  }
-
-  handleGroupsClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/user-groups')
-  }
-
-  handleBroadcastClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/broadcast')
-  }
-
-  handlePaymentsClick = (e) => {
-    this.setState({adminDrawerOpen: !this.state.adminDrawerOpen})
-    browserHistory.push('/pages/pledges/' + this.props.pledge.slug + '/' + this.props.pledge._id + '/payment-plans')
+  onComplete = () => {
+    if (this.props.questions) {
+      browserHistory.push(window.location.href + '/questions')
+    } else {
+      browserHistory.push(window.location.href + '/joined')
+    }
   }
 
   changeAnchorEl = (e) => {
@@ -302,8 +267,8 @@ export default class DesktopProject extends React.Component {
 
 
   render () {
-    var tabLength = 2
-    var inkBarLeft = this.refs.tabs ? this.refs.tabs.state.selectedIndex : 0 * 50 + 20
+
+console.log(this.props)
     var badgeFill = 1
 
 
@@ -439,7 +404,7 @@ export default class DesktopProject extends React.Component {
 
                        primary={true} fullWidth={true}
                         labelStyle={{letterSpacing: '0.6px', fontWeight: 'bold', fontFamily: 'Permanent Marker', fontSize: '18px'}}
-                       label="Join Now" onTouchTap={this.handleJoiningModal} />
+                       label="Join Now" onTouchTap={this.handleModal} />
 
                       </div>
 
@@ -506,8 +471,17 @@ export default class DesktopProject extends React.Component {
                 label='The Story'>
                 <CardText  children = {
                     <div>
-                        <div style={{display: 'flex'}}>
-                          Organisation details
+                        <div >
+
+                          <img style={{height: '100px', width: '100px', objectFit: 'cover'}}
+                            src = 'https://pbs.twimg.com/profile_images/527359343239245824/HKrgEYEh_400x400.png'/>
+                          <p style={{margin: 0, fontWeight: 'bold'}}>
+                              Charity name
+                            </p>
+                        <p style={{margin: 0, paddingBottom: '16px'}}>
+                            2nd project
+                          </p>
+                          <div style={{borderBottom: 'solid 0.5px #dddddd', width: '100%'}}/>
                         </div>
                          <div dangerouslySetInnerHTML={this.descriptionMarkup()}/>
                            <div className="fb-like" href={this.state.project.FacebookURL}

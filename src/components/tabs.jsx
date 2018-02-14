@@ -7,7 +7,7 @@ import ProjectList from './projectlist.jsx';
 import { Link, browserHistory } from 'react-router';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-
+import Featured from './featured.jsx';
 
 const styles = {
   selectedTab: {
@@ -84,7 +84,7 @@ export default class UserTabs extends React.Component {
     return (
       <div>
         {localStorage.getItem('worktoolsToken') ?
-        null
+          null
         :
       <Home/>
         }

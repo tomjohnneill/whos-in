@@ -188,7 +188,10 @@ export default class Project extends React.Component {
 
       }.bind(this))
       .then(response => response.json())
-      .then(data => this.setState({charity: data[0], loading: false}))
+      .then(data => this.setState({charity: data[0]}))
+      .then(  fetch(`https://api.worktools.io/api/Question/?api_token=9915e23e-d908-4d29-badf-d51d76cfb9bb&Project=${this.props.params._id}`)
+      .then(response => response.json()))
+      .then(data => this.setState({questions: data,  loading: false}))
       .catch(error => this.setState({ error, loading: false }));
 
 
@@ -456,7 +459,7 @@ export default class Project extends React.Component {
           <DocumentTitle title={this.state.project.Name}>
             <div>
           <MediaQuery minDeviceWidth={700}>
-              <DesktopProject params={this.props.params} project={this.state.project} charity={this.state.charity}/>
+              <DesktopProject params={this.props.params} project={this.state.project} charity={this.state.charity} questions={this.state.questions}/>
           </MediaQuery>
 
           <MediaQuery maxDeviceWidth = {700}>
