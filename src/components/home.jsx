@@ -141,7 +141,7 @@ export default class Home extends React.Component{
     })
     .then(response => response.json())
     .then(data => console.log(data[0]))
-    .then(data => fetch('https://api.worktools.io/api/_/authenticate/?api_token=8613b9b6-8d3c-44da-9592-12998754bf38', {
+    .then(data => fetch('https://api.worktools.io/api/_/authenticate/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7', {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -152,7 +152,7 @@ export default class Home extends React.Component{
     .then(response => response.json())
     .then(data => localStorage.setItem('worktoolsToken', data.api_token))
     .then(data => console.log(localStorage))
-    .then(data => browserHistory.push('/create-project'))
+    .then(data => browserHistory.push('/create-project/1'))
     .catch(error => this.setState({ error, loading: false }));
   }
 
@@ -183,10 +183,11 @@ export default class Home extends React.Component{
                 top: '165px', left: '60px',
                 display: 'flex', alignItems: 'left', flexDirection: 'column'
               }}>
-                  <div style={{fontFamily: 'Permanent Marker', fontSize: '100px', color: '#FF9800'}}>
+                  <div style={{fontFamily: 'Permanent Marker', fontSize: '100px', color: '#FF9800',
+                          textShadow:'1px 1px rgb(0,0,0)'}}>
                     Who's In?
                   </div>
-                  <div style={{textAlign: 'left', color: 'white', fontSize: '70px'}} >
+                  <div style={{textAlign: 'left', color: 'white', fontSize: '70px',textShadow: '2px 2px rgb(0,0,0)'}} >
                     Building a movement starts with one first step
 
                   </div>
@@ -195,12 +196,16 @@ export default class Home extends React.Component{
 
             <div
               className='container'
-              style={{position: 'absolute', backgroundColor: 'white',
-              zIndex: 2, borderRadius: '10px', height: '427px', width: '426px',
-              top: '165px', right: '120px', boxShadow: '0px 2px 4px rgba(0,0,0,0.5)'
+              style={{position: 'absolute',
+              zIndex: 2, height: '427px', width: '426px',
+              top: '165px', right: '120px'
             }}>
             <div id='card' className={this.state.flipped === true ? 'flipped' : 'notflipped'}>
-                <span className='front' style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+              <span className='front' style={{height: '100%', width: '100%', backgroundColor: 'white',
+                 boxShadow: '0px 2px 4px rgba(0,0,0,0.5)', borderRadius: '10px',
+                 height: '100%'}} >
+                <span  style={{height: '100%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
                   <div style={{fontFamily: 'Permanent Marker', paddingBottom: '20px', fontSize: '24px'}}>
                     Create Your Project
                   </div>
@@ -227,8 +232,12 @@ export default class Home extends React.Component{
                       labelColor='white' label='Login' disabled={this.state.flipped} style={{height: '50px', backfaceVisibility: 'hidden'}}/>
                   </div>
                 </span>
-                <span className='back'
-                    style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+              </span>
+              <span className='back' style={{height: '100%', width: '100%', backgroundColor: 'white',
+                 boxShadow: '0px 2px 4px rgba(0,0,0,0.5)', borderRadius: '10px'}}>
+                <span
+                  style={{display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    , flexDirection: 'column', height: '100%'}}>
                       <Plant style={{marginBottom: '16px', height: '80px'}}/>
                       <div style={{paddingBottom: '16px'}}>
                         Create your Account
@@ -270,6 +279,13 @@ export default class Home extends React.Component{
                           key='password'
                           style={styles.textfield}/>
                       </div>
+                      {this.state.error ?
+                        <div style={{color: 'red'}}>
+                          This account already exists, you should login
+                        </div>
+                        :
+                        null
+                      }
                       <div style={{width: '100%', boxSizing: 'border-box', paddingLeft: '50px', backfaceVisibility: 'inherit'
                         , paddingRight: '50px', borderRadius: '10px', paddingBottom: '20px'}}>
                         <RaisedButton fullWidth={true}
@@ -281,6 +297,7 @@ export default class Home extends React.Component{
                           />
                       </div>
 
+                </span>
                 </span>
                 </div>
             </div>

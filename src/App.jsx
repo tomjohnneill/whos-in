@@ -13,16 +13,16 @@ const muiTheme = getMuiTheme({
   palette: {
     primary1Color: '#E55749',
     primary2Color:  '#FF9800',
-    accent1Color: '#0068B2',
+    accent1Color: '#65A1e7',
   },
   appBar: {
     height: 50,
   },
   datePicker: {
-    headerColor: '#0068B2',
+    headerColor: '#65A1e7',
   },
   timePicker: {
-    headerColor: '#0068B2',
+    headerColor: '##65A1e7',
   },
   fontFamily: 'Open Sans'
 });

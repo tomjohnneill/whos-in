@@ -5,7 +5,10 @@ import {  browserHistory } from 'react-router';
 import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
 import Search from 'material-ui/svg-icons/action/search';
+import FlatButton from 'material-ui/FlatButton';
 
+
+var worktoolsToken = localStorage.getItem('worktoolsToken')
 
 const styles = {
   textfield: {
@@ -98,18 +101,135 @@ export default class OrganisationLookup extends React.Component{
       });
     console.log(newArray)
     this.setState({loading: true})
-    fetch(`https://charitybase.uk/api/v0.2.0/charities?search=${string}&fields=beta.activities,mainCharity,charityNumber,contact&limit=1`)
+    fetch(`https://charitybase.uk/api/v0.2.0/charities?search=${string}&fields=beta.activities,favicon,mainCharity,charityNumber,contact&limit=1`)
     .then(response => response.json())
-    .then(data => this.setState({loading: false, details: data.charities ? data.charities[0] : {}}))
+    .then(data => {this.setState({loading: false, details: data.charities ? data.charities[0] : {}});
+      var charity = data.charities[0]
+      this.setState({
+        activities: charity.beta ? charity.beta.activities : null,
+        email: charity.mainCharity ? charity.mainCharity.email : null,
+        website: charity.mainCharity ? charity.mainCharity.website : null,
+        phone: charity.contact ? charity.contact.phone : null,
+        address: charity.contact ? charity.contact.address.toString() : null,
+        postcode: charity.contact ? charity.contact.postcode : null,
+        charityNumber: charity.charityNumber})
+    }
+  )
     };
+
+  changeCharityInfo (id, e, nv) {
+    console.log(id)
+    console.log(nv)
+    console.log(e)
+    this.setState({[id]: nv})
+  }
 
 
   handleNext = (e) => {
     e.preventDefault()
-    browserHistory.push('/create-project/finish')
+    var basics = JSON.parse(localStorage.getItem('basics'))
+    var story = JSON.parse(localStorage.getItem('story'))
+    var coverPhoto = localStorage.getItem('coverPhoto')
+    var body = {
+      'Name': story.title,
+      'Description': story.story,
+      'Target People': basics.min,
+      'Maximum People': basics.max,
+      'Featured Image': coverPhoto,
+      'Deadline': basics.deadline,
+      'Location': basics.address
+    }
+    console.log(body)
+    console.log(JSON.stringify(body))
+
+
+    var charityBody = {
+      'Name': this.state.searchText,
+      'Summary': this.state.activities,
+      'Description': this.state.activities,
+      'Website': this.state.website,
+      'Email': this.state.email,
+      'Address': this.state.address,
+      'Logo': this.state.logo,
+      'Phone': this.state.phone,
+      'Postcode': this.state.postcode,
+      'Charity Number': this.state.charityNumber
+    }
+    fetch(`https://api.worktools.io/api/Charity/?api_token=${worktoolsToken}&Charity%20Number=${this.state.charityNumber}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data[0]) {
+        fetch(`https://api.worktools.io/api/Charity/${data[0].id}/?api_token=${worktoolsToken}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'PUT',
+          body: JSON.stringify(charityBody)
+        })
+        .then(response => response.json())
+        .then(newData => console.log(newData))
+        .then(newData => {
+          body.Charity = data[0].id
+          fetch(`https://api.worktools.io/api/Project/?api_token=${worktoolsToken}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(body)
+          })
+          .then(response => response.json())
+          .then(data => browserHistory.push('/create-project/' + data[0].id))
+          .catch(error => {this.setState({error: error}); console.log(error)})
+
+        }
+        )
+        .catch(error => {this.setState({error: error}); console.log(error)})
+      } else {
+        fetch(`https://api.worktools.io/api/Charity/?api_token=${worktoolsToken}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(charityBody)
+        })
+        .then(response => response.json())
+
+        .then(data => {
+          console.log(data)
+          body.Charity = data[0].id
+          console.log(body)
+          fetch(`https://api.worktools.io/api/Project/?api_token=${worktoolsToken}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(body)
+          })
+          .then(response => response.json())
+          .then(newProject => {
+            console.log(newProject)
+            browserHistory.push('/create-project/' + newProject[0].id)})
+          .catch(error => {this.setState({error: error}); console.log(error)})
+
+        }
+        )
+        .catch(error => {this.setState({error: error}); console.log(error)})
+      }
+    })
+
+    .catch(error => {this.setState({error: error}); console.log(error)})
+
+
+
+    /*
     localStorage.removeItem('basics')
     localStorage.removeItem('story')
     localStorage.removeItem('coverPhoto')
+    */
   }
 
   handleFill = (e) => {
@@ -159,12 +279,18 @@ export default class OrganisationLookup extends React.Component{
                 fullWidth={true}
                 labelStyle={{ color: 'white', fontFamily: 'Permanent Marker', fontSize: '18px', letterSpacing: '1px'}}
                 />
+
               </div>
               :
-              <RaisedButton label='Smart Fill' backgroundColor='#E55749'
-                onTouchTap={this.handleFill}
-                fullWidth={true}
-                labelStyle={{ color: 'white', fontFamily: 'Permanent Marker', fontSize: '18px', letterSpacing: '1px'}}/>
+              <div>
+                <RaisedButton label='Smart Fill' backgroundColor='#E55749'
+                  onTouchTap={this.handleFill}
+                  fullWidth={true}
+                  labelStyle={{ color: 'white', fontFamily: 'Permanent Marker', fontSize: '18px', letterSpacing: '1px'}}/>
+                <FlatButton style={{marginTop: '16px'}} label='Fill in by hand' labelStyle={{color: '#4A90E2'}}
+                  onTouchTap={(e) => {this.setState({stage: 1, loading: false, details: {}})}}
+                  fullWidth={true}/>
+              </div>
             }
             </div>
           </div>
@@ -204,6 +330,7 @@ export default class OrganisationLookup extends React.Component{
                   defaultValue={this.state.details.name}
                   hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
                   key='name'
+                  onChange={this.changeCharityInfo.bind(this, 'name')}
                   style={styles.whiteTextfield}/>
               </div>
               <div style={{padding: '6px'}}>
@@ -299,7 +426,7 @@ export default class OrganisationLookup extends React.Component{
                       paddingLeft: '12px',  boxSizing: 'border-box'}}
                     underlineShow={false}
                     defaultValue={this.state.details.charityNumber}
-                    hintText={'Website'}
+                    hintText={'Charity Number'}
                     hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
                     key='location3'
                     style={styles.whiteTextfield}/>

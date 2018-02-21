@@ -41,9 +41,15 @@ const style = {
   appBar: {
     margin: '0px',
     boxShadow: 'inset 0px 1px 3px rgba(0,0,0.5), 0px 2px 4px, rgba(0,0,0.5)',
-    paddingLeft: '16px',
+    paddingLeft: '100px',
     backgroundColor: 'white',
     borderBottom: '1px solid #DBDBDB'
+  },
+  loggedInAppBar : {
+    margin: '0px',
+    boxShadow: 'inset 0px 1px 3px rgba(0,0,0.5), 0px 2px 4px, rgba(0,0,0.5)',
+    paddingLeft: '100px',
+    background: 'linear-gradient(rgba(0,0,0,1), rgba(0,0,0,0.07))'
   },
   otherAnchor :{
     float: 'right',
@@ -209,16 +215,16 @@ export default class Navigation extends React.Component {
 
   return(
 
-      <div style={{borderBottom: '1px solid #DBDBDB !important'}}>
+      <div >
 
         <AppBar
           showMenuIconButton={false}
-          style={style.appBar}
-          className='appbar'
+          style={window.location.pathname === '/' && localStorage.getItem('worktoolsToken') ? style.loggedInAppBar : style.appBar}
+          className={this.props.location === '/' && localStorage.getItem('worktoolsToken') ? 'loggedInAppBar' :'appbar'}
           iconElementRight={
                             <div style={{display: 'flex', alignItems: 'center'}}>
                             <MediaQuery minDeviceWidth = {700}>
-                              {localStorage.getItem('worktoolsToken') ?
+                              {localStorage.getItem('worktoolsToken') && !window.location.pathname.includes('create-project') ?
                               <RaisedButton
                                 style={{height: '36px', marginRight: '16px', boxShadow: ''}} primary={true} overlayStyle={{height: '36px'}}
                                 buttonStyle={{height: '36px'}}

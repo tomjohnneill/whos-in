@@ -37,7 +37,8 @@ const Feature = (props) => (
         {props.project.Description}
       </div>
       <div style={{position: 'absolute', bottom: '0px', fontSize: '14px', color: '#4A90E2'}}>
-        <Link to={'/projects/' + props.project.Name + '/' + props.project.id}>See More</Link>
+        <FlatButton labelStyle={{color: '#4A90E2'}}
+          label='See More' onTouchTap={(e) => {browserHistory.push('/projects/' + props.project.Name + '/' + props.project.id)}}/>
       </div>
     </div>
     <div style={{flex: 3}}>
@@ -137,11 +138,14 @@ export default class ProjectList extends React.Component{
                 :
 
               <List>
+                {this.state.projects ?
+                <div style={{display: 'flex'}}>
 
-                <div style={{display: 'flex', paddingBottom: '109px'}}>
                   <Feature project={this.state.projects[Math.floor(Math.random()*5) + 1]}/>
                   <Feature project={this.state.projects[Math.floor(Math.random()*5) + 1]}/>
+
                 </div>
+                : null}
 
             </List>}
           </div>
@@ -194,7 +198,7 @@ export default class ProjectList extends React.Component{
 
             cellHeight={220}
             padding={12}>
-            {this.state.projects.map((project) => (
+            {this.state.projects ? this.state.projects.map((project) => (
 
               <GridTile
                 key={project._id}
@@ -226,7 +230,7 @@ export default class ProjectList extends React.Component{
                 }
             />
 
-              ))}
+        )) : null}
               </GridList>
                 </List>
               }

@@ -8,6 +8,8 @@ import { Link, browserHistory } from 'react-router';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Featured from './featured.jsx';
+import {changeImageAddress} from './desktopproject.jsx';
+import AllProjects from './allprojects.jsx';
 
 const styles = {
   selectedTab: {
@@ -15,12 +17,12 @@ const styles = {
     backgroundColor: 'white',
     color: '#FF9800',
     textTransform: 'none',
-    fontSize: '20px',
+    fontSize: '16px',
     letterSpacing: '0.4px',
     lineHeight: '16px',
-    fontFamily: 'Permanent Marker',
     paddingLeft: '20px',
     paddingRight: '20px',
+    fontWeight: 600
   },
   tab: {
     height: '60px',
@@ -39,6 +41,10 @@ const styles = {
   textfield: {
     height: '40px',
     fontsize: '20px'
+  },
+  button: {
+    fontFamily: 'Permanent Marker',
+    fontSize: '18px'
   }
 }
 
@@ -50,7 +56,7 @@ export default class UserTabs extends React.Component {
     var lookup = ['projects','profile','charities']
     this.state = {
       slideIndex: this.props.params.tab ? lookup.indexOf(this.props.params.tab) : 0,
-      inkBarLeft: '25.0625px',
+      inkBarLeft: '6.375px',
     };
   }
 
@@ -64,7 +70,7 @@ export default class UserTabs extends React.Component {
     console.log(e)
     var rect = e.target.getBoundingClientRect()
     console.log(rect)
-    this.setState({inkBarLeft: (rect.width-60)/2  + rect.x - 60,
+    this.setState({inkBarLeft: (rect.width-100)/2  + rect.x - 100,
 
     })
 
@@ -84,18 +90,43 @@ export default class UserTabs extends React.Component {
     return (
       <div>
         {localStorage.getItem('worktoolsToken') ?
-          null
+          <div>
+            <img
+              style={{height: '90vh', width: '100%', objectFit: 'cover', position: 'relative', marginTop: '-51px'}}
+              src={changeImageAddress('https://d3kkowhate9mma.cloudfront.net/ab09077f-2b0d-471a-8e67-d338081bdc56', '1500xauto')}/>
+            <div style={{position: 'absolute',top:'-51px',  height: '100%', minWidth: 320,
+              width: '30%',
+              left: '5%'
+              , background: 'radial-gradient(ellipse closest-side, rgba(0,0,0,0.75), rgba(0,0,0,0))',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            paddingLeft: '20px', paddingRight: '20px', boxSizing: 'border-box'}}>
+              <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'
+                , justifyContent: 'center', width: '300px'}}>
+                <h2 style={{color: 'white'}}>Plant vegetables in Dalston Curve Garden</h2>
+                <span style={{fontWeight: 'lighter', color: 'white'}}>
+                  Children don't know where their food comes from, come and show them
+                </span>
+                <div style={{display: 'flex', paddingTop: '30px'}}>
+                  <RaisedButton labelStyle={styles.button} primary={true} label='See More'/>
+                  <RaisedButton labelStyle={styles.button} style={{marginLeft: '16px'}} secondary ={true} label='Another'/>
+                </div>
+              </div>
+            </div>
+
+            <div style={{height: '100px', position: 'absolute', width: '100%', bottom: '51px',
+              background: 'linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1))'}}/>
+          </div>
         :
       <Home/>
         }
         <Tabs
           className='tab'
-          style={{borderBottom: '1px solid #e4e4e4', boxShadow: '0 1px 5px rgba(0, 0, 0, 0.1) ', paddingLeft: '60px', paddingRight: '60px'}}
+          style={{ paddingLeft: '100px', paddingRight: '100px'}}
           tabItemContainerStyle={{height: '60px', backgroundColor: 'white', borderBottom: '1px solid #DDDDDD'}}
             value={this.props.params.tab}
             onChange={this.handleTwoTabClick}
             inkBarStyle={{zIndex: 2, backgroundColor: '#FF9800',
-            left:this.state.inkBarLeft, width: '60px'}}
+            left:this.state.inkBarLeft, width: '100px'}}
           >
 
             <Tab
@@ -121,6 +152,9 @@ export default class UserTabs extends React.Component {
               <ProjectList  id='block'/>
             </Tab>
           </Tabs>
+
+          <AllProjects/>
+
           <div style={{height: '311px', backgroundColor: '#F9F9F9', paddingTop: '81px',
             paddingLeft: '50px', paddingRight: '50px', display: 'flex', justifyContent: 'center'}}>
             <div style={{flex: 3}}>

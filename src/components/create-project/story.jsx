@@ -49,13 +49,13 @@ class StoryForm extends React.Component {
     var story = {title: this.state.title, story: this.state.story}
     var storyString = JSON.stringify(story)
     localStorage.setItem('story', storyString)
-    browserHistory.push('/create-project/3')
+    browserHistory.push('/create-project/4')
   }
 
 
   handlePrevious = (e) => {
     e.preventDefault()
-    browserHistory.push('/create-project/1')
+    browserHistory.push('/create-project/2')
   }
 
   handleSetTitle = (e) => {

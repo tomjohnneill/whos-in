@@ -67,7 +67,7 @@ export default class Share extends React.Component{
 
               <li style={styles.line} onTouchTap={this.handleEmail}>
                 <FontIcon style={styles.icon} className={"far fa-envelope"}/>
-                Send an email to friends
+                Send an email
               </li>
               <li style={styles.line} onTouchTap={this.handleWhatsapp}>
                 <FontIcon style={styles.icon} color={'#25d366'} className={'fab fa-whatsapp'}/>
@@ -86,7 +86,7 @@ export default class Share extends React.Component{
             <ul style={{margin: 0, cursor: 'pointer'}}>
               <li style={styles.line} onTouchTap={this.handleEmail}>
                 <FontIcon style={styles.icon} className={"far fa-envelope"}/>
-                Send an email to your friends
+                Send an email
               </li>
               <li style={styles.line} onTouchTap={this.handleFacebook}>
                 <FontIcon color={'#0084ff'} style={styles.icon} className={'fab fa-facebook-messenger'}/>

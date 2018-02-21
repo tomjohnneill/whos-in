@@ -33,7 +33,7 @@ import SignupModal from './signupmodal.jsx';
 import JoiningModal from './joiningmodal.jsx';
 import Badge from 'material-ui/Badge';
 import Share from './share.jsx'
-
+import ConditionalModal from './conditionalmodal.jsx';
 
 
 const Loading = () => (
@@ -106,7 +106,9 @@ const styles = {
   bottomBit: {
     marginTop: '-5px',
     fontWeight: 'lighter',
-    letterSpacing: '1.5px'
+    letterSpacing: '0.5px',
+    display: 'flex', alignItems: 'center',
+    width: '100%'
   },
   chip: {
   margin: 4,
@@ -171,6 +173,51 @@ export function dateDiffInDays(a, b) {
   return Math.floor((utc2 - utc1) / _MS_PER_DAY);
 }
 
+var worktoolsToken = localStorage.getItem('worktoolsToken') ? localStorage.getItem('worktoolsToken') :
+  '05a797cd-8b31-4abe-b63b-adbf0952e2c7'
+
+class WhosIn extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {}
+  }
+
+  componentDidMount(props) {
+    console.log('worktools Token' + worktoolsToken)
+    fetch(`https://api.worktools.io/api/Engagement/?api_token=${worktoolsToken}&Project=${this.props.project.id}`)
+    .then(response => response.json())
+    .then(data => this.setState({engagements: data}))
+    .catch(error => this.setState({error: error}))
+    }
+
+  render() {
+    return (
+      <div>
+        {this.state.engagements ?
+          this.state.engagements.map((eng) => (
+            <Link to={'/profile/' + eng.Volunteer}>
+            <ul style={{textAlign: 'left', alignItems: 'center', borderBottom: '1px solid #DDDDDD', height: '60px', fontSize: '10px', display: 'flex'}}>
+              <Avatar src={eng['Volunteer Picture']}/>
+              <div style={{flex: 2, paddingLeft: '24px',display: 'flex', alignItems: 'center'}}>
+                <div>
+                  <b>{eng['Volunteer Name']}</b> <br/>
+              Where from
+              </div>
+              </div>
+              <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
+                2 minutes ago
+              </div>
+            </ul>
+            </Link>
+          ))
+          :
+          null}
+
+      </div>
+    )
+  }
+}
+
 export default class DesktopProject extends React.Component {
   constructor(props) {
     super(props);
@@ -185,6 +232,25 @@ export default class DesktopProject extends React.Component {
     console.log(this.state)
   }
 
+  createEngagement = () => {
+    var body = {
+      "Project": this.props.project.id
+    }
+    console.log(body)
+    console.log(JSON.stringify(body))
+    console.log(worktoolsToken)
+    fetch(`https://api.worktools.io/api/Engagement/?api_token=${worktoolsToken}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(body)
+    })
+    .then(response => {console.log(response);response.json()})
+    .then(data => console.log(data))
+    .catch(error => {this.setState({error: error}); console.log(error)})
+  }
 
   setModal = () => {
     let modal = this.state.modalOpen
@@ -196,6 +262,7 @@ export default class DesktopProject extends React.Component {
       if (this.props.questions) {
         browserHistory.push(window.location.href + '/questions')
       } else {
+        this.createEngagement()
         browserHistory.push(window.location.href + '/joined')
       }
 
@@ -211,6 +278,14 @@ export default class DesktopProject extends React.Component {
   handleJoiningModal = (e) => {
 
     this.setState({joiningOpen: true})
+  }
+
+  handleConditionalModal = (e) => {
+    this.setState({conditionalOpen: true})
+  }
+
+  handleConditionalChangeOpen = () => {
+    this.setState({conditionalOpen: false})
   }
 
   handleJoiningChangeOpen = () => {
@@ -248,8 +323,14 @@ export default class DesktopProject extends React.Component {
     if (this.props.questions) {
       browserHistory.push(window.location.href + '/questions')
     } else {
+      this.createEngagement()
       browserHistory.push(window.location.href + '/joined')
     }
+  }
+
+  handleLetsGo = (e) => {
+    e.preventDefault()
+    browserHistory.push('/create-project/1')
   }
 
   changeAnchorEl = (e) => {
@@ -367,19 +448,16 @@ console.log(this.props)
                     <div style={{justifyContent: 'space-between', display: 'flex', flexDirection: 'column', height: '100%'}}>
                       <div>
                         <p style={{fontWeight: '600',  textAlign: 'left', margin: '0px'}}>50 people are in</p>
-                        <p style={{fontWeight: 'lighter',  textAlign: 'left', marginTop: '4px'}}>65 people needed</p>
+                        <p style={{fontWeight: 'lighter',  textAlign: 'left', marginTop: '4px'}}>{this.state.project['Target People']} people needed</p>
                         <LinearProgress  style={{height: '5px', borderRadius: '1.5px'}} color={'#00ABE8'} mode="determinate" value={6} />
                         <div style={{display: 'flex', paddingTop: '16px'}}>
                           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1}}>
                             <div style={styles.bottomBit}>
-                              Where
+                              <Place style={{marginRight: '16px', height: '28.8px'}} color={grey500}/>
+                              <div>{this.state.project.Location}</div>
                             </div>
                           </div>
-                          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1}}>
-                            <div style={styles.bottomBit}>
-                              Type
-                            </div>
-                          </div>
+
 
 
                         </div>
@@ -393,11 +471,14 @@ console.log(this.props)
                         </div>
                       </div>
 
-                      <Share
-                        Name={this.props.project.Name}
-                        smsbody={encodeURIComponent("I'm thinking of going to this event, can you come with me? ") + window.location.href}
-                        emailbody={`Hi%20there%2C%0A%0AI%20just%20agreed%20to%20go%20to%20this%20event%3A%20%22${this.props.project.Name}%22%2C%20but%20don%27t%20really%20want%20to%20go%20to%20it%20by%20myself.%20%0A%0AIf%20you%20come%20with%20me%2C%20we%20could%20both%20do%20something%20good.%20You%20can%20read%20a%20bit%20more%20about%20it%20here%3A%0A%0A${window.location.href}%0A%0AThanks!%0A%0A` + "name"}
+                      <RaisedButton secondary={true} fullWidth={true}
+                        labelStyle={{letterSpacing: '0.6px', fontWeight: 'bold',
+                          fontFamily: 'Permanent Marker', fontSize: '18px'}}
+                        label="I'll do it if..."
+                        onTouchTap={this.handleConditionalModal}
                         />
+
+
 
                       <div>
                     <RaisedButton
@@ -476,14 +557,14 @@ console.log(this.props)
                           <img style={{height: '100px', width: '100px', objectFit: 'cover'}}
                             src = 'https://pbs.twimg.com/profile_images/527359343239245824/HKrgEYEh_400x400.png'/>
                           <p style={{margin: 0, fontWeight: 'bold'}}>
-                              Charity name
+                              {this.props.charity.Name}
                             </p>
                         <p style={{margin: 0, paddingBottom: '16px'}}>
                             2nd project
                           </p>
                           <div style={{borderBottom: 'solid 0.5px #dddddd', width: '100%'}}/>
                         </div>
-                         <div dangerouslySetInnerHTML={this.descriptionMarkup()}/>
+                         <div style={{marginBottom: '30px'}} dangerouslySetInnerHTML={this.descriptionMarkup()}/>
                            <div className="fb-like" href={this.state.project.FacebookURL}
                           width='200px'  layout="standard" action="like" size="small" showFaces="true" share="false"></div>
                         <div style={{marginTop: '20px', padding: '16px', boxSizing: 'border-box', backgroundColor: '#f5f5f5'
@@ -492,7 +573,9 @@ console.log(this.props)
                             Start a project of your own
                           </div>
                           <div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
-                            <RaisedButton label="Let's Go" style={{borderRadius: '4px', float: 'right'}}
+                            <RaisedButton label="Let's Go"
+                              onTouchTap={this.handleLetsGo}
+                              style={{borderRadius: '4px', float: 'right'}}
                               labelStyle={{fontFamily: 'Permanent Marker'}}/>
                           </div>
                         </div>
@@ -564,31 +647,6 @@ console.log(this.props)
               <h1 style={{fontFamily: 'Permanent Marker', textAlign: 'left'}}>Who's In?</h1>
               <li>
 
-                <ul style={{textAlign: 'left', alignItems: 'center', borderBottom: '1px solid #DDDDDD', height: '60px', fontSize: '10px', display: 'flex'}}>
-                  <Avatar src=''/>
-                  <div style={{flex: 2, paddingLeft: '24px',display: 'flex', alignItems: 'center'}}>
-                    <div>
-                      <b>Name</b> <br/>
-                  Where from
-                  </div>
-                  </div>
-                  <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
-                    2 minutes ago
-                  </div>
-                </ul>
-
-                <ul style={{textAlign: 'left', alignItems: 'center', borderBottom: '1px solid #DDDDDD', height: '60px', fontSize: '10px', display: 'flex'}}>
-                  <Avatar src=''/>
-                  <div style={{flex: 2, paddingLeft: '24px',display: 'flex', alignItems: 'center'}}>
-                    <div>
-                      <b>Name</b> <br/>
-                  Where from
-                  </div>
-                  </div>
-                  <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
-                    2 minutes ago
-                  </div>
-                </ul>
 
 
                 <ul style={{textAlign: 'left', alignItems: 'center', borderBottom: '1px solid #DDDDDD', height: '60px', fontSize: '10px', display: 'flex'}}>
@@ -604,6 +662,21 @@ console.log(this.props)
                   </div>
                 </ul>
 
+
+                <ul style={{textAlign: 'left', alignItems: 'center', borderBottom: '1px solid #DDDDDD', height: '60px', fontSize: '10px', display: 'flex'}}>
+                  <Avatar src=''/>
+                  <div style={{flex: 2, paddingLeft: '24px',display: 'flex', alignItems: 'center'}}>
+                    <div>
+                      <b>Name</b> <br/>
+                  Where from
+                  </div>
+                  </div>
+                  <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
+                    2 minutes ago
+                  </div>
+                </ul>
+
+                <WhosIn project={this.props.project}/>
 
               </li>
             </div>
@@ -628,6 +701,15 @@ console.log(this.props)
             title={this.props.params.project}
               open={this.state.joiningOpen}
               changeOpen={this.handleJoiningChangeOpen}
+              onComplete={this.onComplete}
+              />
+
+          <ConditionalModal
+            _id={this.props.params._id}
+            title={this.props.params.project}
+            project = {this.state.project ? this.state.project : null}
+              open={this.state.conditionalOpen}
+              changeOpen={this.handleConditionalChangeOpen}
               onComplete={this.onComplete}
               />
 

@@ -52,7 +52,7 @@ export default  class SignupModal extends React.Component {
       'Name' : this.state.name,
       'Email' : this.state.email,
       'Password': this.state.password,
-      'External User' : 'True',
+      'External User' : true,
       'Role' : 'Volunteer'
     }
 
@@ -71,7 +71,7 @@ export default  class SignupModal extends React.Component {
     })
     .then(response => response.json())
     .then(data => console.log(data[0]))
-    .then(data => fetch('https://api.worktools.io/api/_/authenticate/?api_token=8613b9b6-8d3c-44da-9592-12998754bf38', {
+    .then(data => fetch('https://api.worktools.io/api/_/authenticate/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7', {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -79,6 +79,26 @@ export default  class SignupModal extends React.Component {
       method: 'POST',
       body: JSON.stringify(authenticate)
     }))
+    .then(response => response.json())
+    .then(data => {console.log(data);localStorage.setItem('worktoolsToken', data.api_token)})
+    .then(data => console.log(localStorage))
+    .then(data => this.props.onComplete())
+    .catch(error => this.setState({ error, loading: false }));
+  }
+
+  handleLogin = () => {
+    var authenticate = {
+      'email': this.state.email,
+      'password' : this.state.password
+    }
+    fetch('https://api.worktools.io/api/_/authenticate/?api_token=8613b9b6-8d3c-44da-9592-12998754bf38', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(authenticate)
+    })
     .then(response => response.json())
     .then(data => localStorage.setItem('worktoolsToken', data.api_token))
     .then(data => console.log(localStorage))
@@ -217,9 +237,9 @@ export default  class SignupModal extends React.Component {
                   <RaisedButton fullWidth={true}
                     backgroundColor={this.state.email && this.state.password  ?  '#E55749' : '#C5C8C7'}
                     buttonStyle={{borderRadius: '6px'}}
-                    onTouchTap={this.handleCreateAccount}
+                    onTouchTap={this.handleLogin}
                     labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center', height: '100%'}}
-                    labelColor='white' label='Complete' style={{height: '50px'}}
+                    labelColor='white' label='Go' style={{height: '50px'}}
                     />
                 </div>
                 <div>

@@ -151,7 +151,7 @@ export default class ProjectJoined extends React.Component{
           <div style={{display: 'flex'}}>
             <div style={{flex: 2, marginRight: 30}}>
 
-              <Tick/>
+              <Tick color={'#3B9E74'}/>
             </div>
             <div style={{flex: 5}}>
               <div style={{fontSize: '32px', fontWeight: 'bold', textAlign: 'left', marginBottom: 16}}>
