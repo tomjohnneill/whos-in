@@ -199,7 +199,8 @@ export class Form extends React.Component {
 
         </div>
         <RaisedButton label='NEXT' backgroundColor='#E55749'
-          onTouchTap={this.handleNext}
+          onClick={this.handleNext}
+          disabled={!this.state.deadline || !this.state.min || !this.state.address}
           labelStyle={{ color: 'white', fontFamily: 'Permanent Marker', fontSize: '18px', letterSpacing: '1px'}}/>
       </div>
     )

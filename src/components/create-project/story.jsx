@@ -33,12 +33,14 @@ class StoryForm extends React.Component {
     if (story) {
       this.state = {
         title: story.title,
-        story: story.story
+        story: story.story,
+        summary: story.summary
       }
     } else {
       this.state = {
         title: null,
-        story: null
+        story: null,
+        summary: null
       }
     }
   }
@@ -46,7 +48,7 @@ class StoryForm extends React.Component {
   handleNext = (e) => {
     e.preventDefault()
 
-    var story = {title: this.state.title, story: this.state.story}
+    var story = {title: this.state.title, story: this.state.story, summary: this.state.summary}
     var storyString = JSON.stringify(story)
     localStorage.setItem('story', storyString)
     browserHistory.push('/create-project/4')
@@ -64,6 +66,10 @@ class StoryForm extends React.Component {
 
   handleSetStory = (e) => {
     this.setState({story: e.target.value})
+  }
+
+  handleSetSummary = (e) => {
+    this.setState({summary: e.target.value})
   }
 
   render() {
@@ -85,15 +91,30 @@ class StoryForm extends React.Component {
             style={styles.textfield}/>
         </div>
 
+
+        <div style={{width: '100%', paddingBottom: '16px', boxSizing: 'border-box'}}>
+          <p style={styles.header}>Project Summary</p>
+          <TextField fullWidth={true}
+            inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+              paddingLeft: '12px',  boxSizing: 'border-box'}}
+            underlineShow={false}
+            hintText={'A tagline to use on social media etc.'}
+            hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+            key='location'
+            value={this.state.summary}
+            onChange={this.handleSetSummary}
+            style={styles.textfield}/>
+        </div>
+
         <div style={{width: '100%',  paddingBottom: '32px', boxSizing: 'border-box'}}>
           <p style={styles.header}>
-            Why are you running this project?
+            Project Description
           </p>
           <TextField fullWidth={true}
             inputStyle={{borderRadius: '6px', border: '1px solid #858987',
               paddingLeft: '12px',  boxSizing: 'border-box'}}
             underlineShow={false}
-            hintText={'Tell your story'}
+            hintText={'Use your project description to share more about what you’re trying to do. It’s up to you to make the case for your project.'}
             multiLine={true}
             value={this.state.story}
             onChange={this.handleSetStory}
@@ -102,7 +123,8 @@ class StoryForm extends React.Component {
             key='date'/>
         </div>
         <RaisedButton label='NEXT' backgroundColor='#E55749'
-          onTouchTap={this.handleNext}
+          onClick={this.handleNext}
+          disabled={!this.state.story || !this.state.summary || !this.state.title}
           labelStyle={{ color: 'white', fontFamily: 'Permanent Marker', fontSize: '18px', letterSpacing: '1px'}}/>
         <div style={{width: '16px', display: 'inline-block'}}/>
         <RaisedButton label='Previous' backgroundColor='#C5C8C7'

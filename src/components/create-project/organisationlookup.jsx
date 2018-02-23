@@ -112,7 +112,8 @@ export default class OrganisationLookup extends React.Component{
         phone: charity.contact ? charity.contact.phone : null,
         address: charity.contact ? charity.contact.address.toString() : null,
         postcode: charity.contact ? charity.contact.postcode : null,
-        charityNumber: charity.charityNumber})
+        charityNumber: charity.charityNumber,
+      })
     }
   )
     };
@@ -130,6 +131,7 @@ export default class OrganisationLookup extends React.Component{
     var basics = JSON.parse(localStorage.getItem('basics'))
     var story = JSON.parse(localStorage.getItem('story'))
     var coverPhoto = localStorage.getItem('coverPhoto')
+    var times = localStorage.getItem('times')
     var body = {
       'Name': story.title,
       'Description': story.story,
@@ -137,7 +139,9 @@ export default class OrganisationLookup extends React.Component{
       'Maximum People': basics.max,
       'Featured Image': coverPhoto,
       'Deadline': basics.deadline,
-      'Location': basics.address
+      'Location': basics.address,
+      'Start Time': times['Start Time'],
+      'End Time': times['End Time']
     }
     console.log(body)
     console.log(JSON.stringify(body))
@@ -153,7 +157,10 @@ export default class OrganisationLookup extends React.Component{
       'Logo': this.state.logo,
       'Phone': this.state.phone,
       'Postcode': this.state.postcode,
-      'Charity Number': this.state.charityNumber
+      'Charity Number': this.state.charityNumber,
+      'Facebook': this.state.facebook,
+      'Instagram': this.state.instagram,
+      'Twitter': this.state.twitter
     }
     fetch(`https://api.worktools.io/api/Charity/?api_token=${worktoolsToken}&Charity%20Number=${this.state.charityNumber}`)
     .then(response => response.json())
@@ -225,11 +232,12 @@ export default class OrganisationLookup extends React.Component{
 
 
 
-    /*
+
     localStorage.removeItem('basics')
     localStorage.removeItem('story')
+    localStorage.removeItem('times')
     localStorage.removeItem('coverPhoto')
-    */
+
   }
 
   handleFill = (e) => {
@@ -242,6 +250,7 @@ export default class OrganisationLookup extends React.Component{
   }
 
   render() {
+    console.log(this.state)
     return (
       <div style={{display: 'flex', paddingLeft: '100px', paddingTop: '50px', paddingRight: '100px'}}>
         <div style={{width: '500px', display: 'flex'
@@ -274,7 +283,7 @@ export default class OrganisationLookup extends React.Component{
               {this.state.stage === 1 && !this.state.loading ?
                 <div>
                 <div style={{height: '40px'}}/>
-              <RaisedButton label='Save and Continue' backgroundColor='#C5C8C7'
+              <RaisedButton label='Save and Continue' primary={true}
                 onTouchTap={this.handleNext}
                 fullWidth={true}
                 labelStyle={{ color: 'white', fontFamily: 'Permanent Marker', fontSize: '18px', letterSpacing: '1px'}}
@@ -333,51 +342,7 @@ export default class OrganisationLookup extends React.Component{
                   onChange={this.changeCharityInfo.bind(this, 'name')}
                   style={styles.whiteTextfield}/>
               </div>
-              <div style={{padding: '6px'}}>
-                <p style={styles.header}>
-                Organisation Activities
-                </p>
-                <TextField fullWidth={true}
-                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
-                    paddingLeft: '12px',  boxSizing: 'border-box'}}
-                  underlineShow={false}
-                  defaultValue={this.state.details.beta ? this.state.details.beta.activities : null}
-                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
-                  key='activities'
-                  rows={3}
-                  multiLine={true}
-                  style={styles.whiteTextfield}/>
-              </div>
-              <div style={{display: 'flex'}}>
-                <div style={{flex: 1, padding: '6px'}}>
-                  <p style={styles.header}>
-                  Email
-                </p>
-                <TextField fullWidth={true}
-                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
-                    paddingLeft: '12px',  boxSizing: 'border-box'}}
-                  underlineShow={false}
-                  hintText={'Email'}
-                  defaultValue={this.state.details.mainCharity ? this.state.details.mainCharity.email : null}
-                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
-                  key='location2'
-                  style={styles.whiteTextfield}/>
-                </div>
-                <div style={{flex: 1, padding: '6px'}}>
-                  <p style={styles.header}>
-                    Website
-                  </p>
-                <TextField fullWidth={true}
-                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
-                    paddingLeft: '12px',  boxSizing: 'border-box'}}
-                  underlineShow={false}
-                  defaultValue={this.state.details.mainCharity ? this.state.details.mainCharity.website : null}
-                  hintText={'Website'}
-                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
-                  key='location3'
-                  style={styles.whiteTextfield}/>
-                </div>
-              </div>
+
 
               <div style={{display: 'flex'}}>
                 <div style={{flex: '2', padding: '6px'}}>
@@ -388,7 +353,8 @@ export default class OrganisationLookup extends React.Component{
                       inputStyle={{borderRadius: '6px', border: '1px solid #858987',
                         paddingLeft: '12px',  boxSizing: 'border-box'}}
                       underlineShow={false}
-                      defaultValue={this.state.details.contact ? this.state.details.contact.phone : null}
+                      onChange={this.changeCharityInfo.bind(this, 'phone')}
+                      defaultValue={this.state.phone}
                       hintText={'Phone'}
                       hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
                       key='location3'
@@ -398,7 +364,8 @@ export default class OrganisationLookup extends React.Component{
                       inputStyle={{borderRadius: '6px', border: '1px solid #858987',
                         paddingLeft: '12px',  boxSizing: 'border-box'}}
                       underlineShow={false}
-                      defaultValue={this.state.details.contact ? this.state.details.contact.address.toString() : null}
+                      onChange={this.changeCharityInfo.bind(this, 'address')}
+                      defaultValue={this.state.address}
                       hintText={'Address'}
                       hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
                       key='location3'
@@ -408,7 +375,8 @@ export default class OrganisationLookup extends React.Component{
                       inputStyle={{borderRadius: '6px', border: '1px solid #858987',
                         paddingLeft: '12px',  boxSizing: 'border-box'}}
                       underlineShow={false}
-                      defaultValue={this.state.details.contact ? this.state.details.contact.postcode : null}
+                      onChange={this.changeCharityInfo.bind(this, 'postcode')}
+                      defaultValue={this.state.postcode}
                       hintText={'Postcode'}
                       hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
                       key='location3'
@@ -425,13 +393,105 @@ export default class OrganisationLookup extends React.Component{
                     inputStyle={{borderRadius: '6px', border: '1px solid #858987',
                       paddingLeft: '12px',  boxSizing: 'border-box'}}
                     underlineShow={false}
-                    defaultValue={this.state.details.charityNumber}
+                    defaultValue={this.state.charityNumber}
+                    onChange={this.changeCharityInfo.bind(this, 'charityNumber')}
                     hintText={'Charity Number'}
                     hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
                     key='location3'
                     style={styles.whiteTextfield}/>
                 </div>
               </div>
+
+              <div style={{padding: '6px'}}>
+                <p style={styles.header}>
+                Organisation Activities
+                </p>
+                <TextField fullWidth={true}
+                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                    paddingLeft: '12px',  boxSizing: 'border-box'}}
+                  underlineShow={false}
+                  defaultValue={this.state.activities}
+                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                  onChange={this.changeCharityInfo.bind(this, 'activities')}
+                  key='activities'
+                  rows={3}
+                  multiLine={true}
+                  style={styles.whiteTextfield}/>
+              </div>
+
+              <div style={{display: 'flex'}}>
+                <div style={{flex: 1, padding: '6px'}}>
+                  <p style={styles.header}>
+                  Email
+                </p>
+                <TextField fullWidth={true}
+                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                    paddingLeft: '12px',  boxSizing: 'border-box'}}
+                  underlineShow={false}
+                  hintText={'Email'}
+                  onChange={this.changeCharityInfo.bind(this, 'email')}
+                  defaultValue={this.state.email}
+                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                  key='location2'
+                  style={styles.whiteTextfield}/>
+                <p style={styles.header}>
+                  Facebook
+                </p>
+                <TextField fullWidth={true}
+                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                    paddingLeft: '12px',  boxSizing: 'border-box'}}
+                  underlineShow={false}
+                  hintText={'Facebook'}
+                  defaultValue={this.state.facebook}
+                  onChange={this.changeCharityInfo.bind(this, 'facebook')}
+                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                  key='location2'
+                  style={styles.whiteTextfield}/>
+                <p style={styles.header}>
+                  Instagram
+                </p>
+                <TextField fullWidth={true}
+                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                    paddingLeft: '12px',  boxSizing: 'border-box'}}
+                  underlineShow={false}
+                  hintText={'@Username'}
+                  defaultValue={this.state.instagram}
+                  onChange={this.changeCharityInfo.bind(this, 'instagram')}
+                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                  key='location2'
+                  style={styles.whiteTextfield}/>
+                </div>
+                <div style={{flex: 1, padding: '6px'}}>
+                  <p style={styles.header}>
+                    Website
+                  </p>
+                <TextField fullWidth={true}
+                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                    paddingLeft: '12px',  boxSizing: 'border-box'}}
+                  underlineShow={false}
+                  onChange={this.changeCharityInfo.bind(this, 'website')}
+                  defaultValue={this.state.website}
+                  hintText={'Website'}
+                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                  key='location3'
+                  style={styles.whiteTextfield}/>
+                <p style={styles.header}>
+                  Twitter
+                </p>
+                <TextField fullWidth={true}
+                  inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                    paddingLeft: '12px',  boxSizing: 'border-box'}}
+                  underlineShow={false}
+                  hintText={'@Username'}
+                  onChange={this.changeCharityInfo.bind(this, 'twitter')}
+                  defaultValue={this.state.twitter}
+                  hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                  key='location2'
+                  style={styles.whiteTextfield}/>
+                </div>
+              </div>
+
+
             </div>
           }
         </div>

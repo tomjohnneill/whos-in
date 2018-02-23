@@ -95,6 +95,13 @@ export default class ProjectCreated extends React.Component{
             <div style={{marginBottom: '16px', fontWeight: 'lighter'}}>
               Now the fun really starts.
             </div>
+            <div style={{marginTop: '30px'}}>
+
+              <AddToCalendar
+                style={{padding: 16}}
+                displayItemIcons={false}
+                buttonTemplate={icon} event={this.state.event}/>
+            </div>
 
 
 

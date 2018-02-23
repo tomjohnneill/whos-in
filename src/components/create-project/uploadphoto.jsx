@@ -6,6 +6,8 @@ import {  browserHistory } from 'react-router';
 import Dropzone from 'react-dropzone';
 import CircularProgress from 'material-ui/CircularProgress';
 import MediaQuery from 'react-responsive';
+import {Cross} from '../icons.jsx'
+import IconButton from 'material-ui/IconButton';
 
 const styles = {
   textfield: {
@@ -74,6 +76,11 @@ export default class UploadPhoto extends React.Component{
       }.bind(this))
       .catch(error => this.setState({ error }));
 
+  }
+
+  handleRemovePicture = () => {
+    this.setState({imageUrl: null})
+    localStorage.removeItem('coverPhoto')
   }
 
   render() {
@@ -168,12 +175,28 @@ export default class UploadPhoto extends React.Component{
               </div>
               :
                 localStorage.getItem('coverPhoto') && !this.state.uploadComplete ?
-                <img src={localStorage.getItem('coverPhoto')}
-                  style={{width: '100%', height: '70vh', objectFit: 'cover', borderRadius: '10px'}}/>
+                <div style={{position: 'relative'}}>
+                  <img src={imageUrl}
+                  style={{position: 'relative', width: '100%', height: '70vh', objectFit: 'cover', borderRadius: '10px'}}/>
+                <IconButton
+                  style={{padding: 0, position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}
+                  onTouchTap={this.handleRemovePicture}
+                  iconStyle={{position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}>
+                  <Cross color={'rgb(182,48,43)'}/>
+                </IconButton>
+                </div>
                 :
                 this.state.uploadComplete  ?
-                <img src={imageUrl}
-                  style={{width: '100%', height: '70vh', objectFit: 'cover', borderRadius: '10px'}}/>
+                <div style={{position: 'relative'}}>
+                  <img src={imageUrl}
+                  style={{position: 'relative', width: '100%', height: '70vh', objectFit: 'cover', borderRadius: '10px'}}/>
+                <IconButton
+                  style={{padding: 0, position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}
+                  onTouchTap={this.handleRemovePicture}
+                  iconStyle={{position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}>
+                  <Cross color={'rgb(182,48,43)'}/>
+                </IconButton>
+                </div>
                 :
               <div style={{height: '70vh', width: '100%', backgroundColor: '#f5f5f5', display: 'flex',
                 alignItems: 'center', justifyContent: 'center'}}>
@@ -253,12 +276,30 @@ export default class UploadPhoto extends React.Component{
                 </div>
                 :
                   localStorage.getItem('coverPhoto') && !this.state.uploadComplete ?
-                  <img src={localStorage.getItem('coverPhoto')}
-                    style={{width: '100%', height: '200px', objectFit: 'cover', borderRadius: '10px'}}/>
+                  <div style={{position: 'relative'}}>
+                    <img src={imageUrl}
+                      style={{position: 'relative', width: '100%', height: '200px',
+                        objectFit: 'cover', borderRadius: '10px'}}/>
+                      <IconButton
+                        style={{padding: 0, position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}
+                        onTouchTap={this.handleRemovePicture}
+                        iconStyle={{position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}>
+                        <Cross color={'rgb(182,48,43)'}/>
+                      </IconButton>
+                  </div>
                   :
                   this.state.uploadComplete  ?
+                  <div style={{position: 'relative'}}>
                   <img src={imageUrl}
-                    style={{width: '100%', height: '200px', objectFit: 'cover', borderRadius: '10px'}}/>
+                    style={{position: 'relative', width: '100%', height: '200px',
+                      objectFit: 'cover', borderRadius: '10px'}}/>
+                    <IconButton
+                      style={{padding: 0, position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}
+                      onTouchTap={this.handleRemovePicture}
+                      iconStyle={{position: 'absolute', top: 10, right: 10, height: 40, zIndex: 3}}>
+                      <Cross color={'rgb(182,48,43)'}/>
+                    </IconButton>
+                  </div>
                   :
                 <div style={{height: '200px', width: '100%', backgroundColor: '#f5f5f5', display: 'flex',
                   alignItems: 'center', justifyContent: 'center'}}>

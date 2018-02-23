@@ -2,6 +2,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {  browserHistory } from 'react-router';
+import {Tick} from '../icons.jsx';
 
 const styles = {
   textfield: {
@@ -11,7 +12,7 @@ const styles = {
   header : {
     margin: '0px',
     padding: '6px',
-    fontWeight: 500,
+    fontWeight: 700,
     color: '#6B6B6B'
   }
 }
@@ -51,10 +52,15 @@ export default class FirstSummary extends React.Component{
             <p style={{marginTop: '0px',fontFamily: 'Permanent Marker', fontSize: '32px', textAlign: 'left'}}>
               Just one more step</p>
             <div style={{width: '100%', paddingBottom: '16px',
-              paddingRight: '50px', boxSizing: 'border-box'}}>
-              <p style={styles.header}>Step 1</p>
-              <div style={{paddingLeft: '16px', paddingTop: '16px'}}>
-                The Basics, The Story, The Photo
+              paddingRight: '50px', boxSizing: 'border-box', display: 'flex'}}>
+              <div style={{flex: 1}}>
+                <p style={styles.header}>Step 1</p>
+                <div style={{paddingLeft: '16px', paddingTop: '16px'}}>
+                  The Basics, The Story, The Photo
+                </div>
+              </div>
+              <div style={{height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Tick color={'#3B9E74'} style={{height: '50px'}}/>
               </div>
             </div>
             <hr/>
