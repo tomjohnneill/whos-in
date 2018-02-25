@@ -18,7 +18,9 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import MediaQuery from 'react-responsive';
 import {SignupModal} from './signupmodal.jsx';
 import TextField from 'material-ui/TextField';
-import {Plant} from './icons.jsx';
+import {Plant, Spiral} from './icons.jsx';
+
+var commonPassword = require('common-password');
 
 const styles = {
   number: {
@@ -45,7 +47,7 @@ export function changeImageAddress(file, size) {
 export default class Home extends React.Component{
   constructor(props) {
     super(props);
-    this.state = {modalOpen: false, loading: true, flipped: false}
+    this.state = {modalOpen: false, loading: true, flipped: false, type: 'signup'}
   }
 
 
@@ -70,17 +72,22 @@ export default class Home extends React.Component{
     console.log(slug)
     console.log(e)
 
-    browserHistory.push('/pages/pledges/' + slug + '/' + id)
+    browserHistory.push('/projects/' + slug + '/' + id)
 
   }
 
   handleFlip = (e) => {
     e.preventDefault()
     if (localStorage.getItem('worktoolsToken')) {
-      browserHistory.push('/create-project/1')
+      browserHistory.push('/create-project/0')
     } else {
       this.setState({flipped: !this.state.flipped})
     }
+  }
+
+  handleLoginFlip = (e) => {
+    e.preventDefault()
+    this.setState({flipped: !this.state.flipped, type: 'login'})
   }
 
   componentDidMount() {
@@ -114,6 +121,11 @@ export default class Home extends React.Component{
   }
 
   handlePassword = (e, newValue) => {
+    if (commonPassword(newValue)) {
+      this.setState({badPassword: true})
+    } else {
+      this.setState({badPassword: false})
+    }
     this.setState({password: newValue})
   }
 
@@ -140,7 +152,7 @@ export default class Home extends React.Component{
       body: JSON.stringify(body)
     })
     .then(response => response.json())
-    .then(data => console.log(data[0]))
+    .then(data => {console.log(data[0]); localStorage.setItem('worktoolsID', data[0].id)})
     .then(data => fetch('https://api.worktools.io/api/_/authenticate/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7', {
       headers: {
         'Accept': 'application/json',
@@ -152,8 +164,34 @@ export default class Home extends React.Component{
     .then(response => response.json())
     .then(data => localStorage.setItem('worktoolsToken', data.api_token))
     .then(data => console.log(localStorage))
-    .then(data => browserHistory.push('/create-project/1'))
+    .then(data => browserHistory.push('/create-project/0'))
     .catch(error => this.setState({ error, loading: false }));
+
+  }
+
+  handleLogin = () => {
+    var authenticate = {
+      'email': this.state.email,
+      'password' : this.state.password
+    }
+    fetch('https://api.worktools.io/api/_/authenticate/?api_token=8613b9b6-8d3c-44da-9592-12998754bf38', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(authenticate)
+    })
+    .then(response => response.json())
+    .then(data => localStorage.setItem('worktoolsToken', data.api_token))
+    .then(data => console.log(localStorage))
+    .then(data => this.props.onComplete())
+    .catch(error => this.setState({ error, loading: false }));
+
+    fetch(`https://api.worktools.io/api/User/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7&Email=${this.state.email}`)
+    .then(response => response.json())
+    .then(data => localStorage.setItem('worktoolsID', data[0]._id))
+    .catch(error => this.setState({ error}));
   }
 
   render() {
@@ -206,6 +244,7 @@ export default class Home extends React.Component{
                  height: '100%'}} >
                 <span  style={{height: '100%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+                  <img src='/speaker.png' style={{height: '80px', width: 'auto'}}/>
                   <div style={{fontFamily: 'Permanent Marker', paddingBottom: '20px', fontSize: '24px'}}>
                     Create Your Project
                   </div>
@@ -228,76 +267,134 @@ export default class Home extends React.Component{
                   </div>
                   <div style={{width: '100%', boxSizing: 'border-box', paddingLeft: '50px', backfaceVisibility: 'hidden'
                     , paddingRight: '50px', borderRadius: '10px', visibility: this.state.flipped ? 'hidden': null}}>
-                    <FlatButton fullWidth={true}  labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center'}}
+                    <FlatButton fullWidth={true}
+                      onTouchTap={this.handleLoginFlip}
+                      labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center'}}
                       labelColor='white' label='Login' disabled={this.state.flipped} style={{height: '50px', backfaceVisibility: 'hidden'}}/>
                   </div>
                 </span>
               </span>
               <span className='back' style={{height: '100%', width: '100%', backgroundColor: 'white',
                  boxShadow: '0px 2px 4px rgba(0,0,0,0.5)', borderRadius: '10px'}}>
-                <span
-                  style={{display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    , flexDirection: 'column', height: '100%'}}>
-                      <Plant style={{marginBottom: '16px', height: '80px'}}/>
-                      <div style={{paddingBottom: '16px'}}>
-                        Create your Account
-                      </div>
-                      <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
-                        paddingRight: '50px', boxSizing: 'border-box'}}>
-                        <TextField fullWidth={true}
-                          inputStyle={{borderRadius: '6px', border: '1px solid #858987',
-                            paddingLeft: '12px',  boxSizing: 'border-box'}}
-                          underlineShow={false}
-                          hintText={'Name'}
-                          hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
-                          key='name'
-                          onChange={this.handleName}
-                          style={styles.textfield}/>
-                      </div>
-                      <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
-                        paddingRight: '50px', boxSizing: 'border-box'}}>
-                        <TextField fullWidth={true}
-                          inputStyle={{borderRadius: '6px', border: '1px solid #858987',
-                            paddingLeft: '12px',  boxSizing: 'border-box'}}
-                          underlineShow={false}
-                          hintText={'Email'}
-                          onChange={this.handleEmail}
-                          hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
-                          key='email'
-                          style={styles.textfield}/>
-                      </div>
-                      <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
-                        paddingRight: '50px', boxSizing: 'border-box'}}>
-                        <TextField fullWidth={true}
-                          inputStyle={{borderRadius: '6px', border: '1px solid #858987',
-                            paddingLeft: '12px',  boxSizing: 'border-box'}}
-                          underlineShow={false}
-                          onChange={this.handlePassword}
-                          type='password'
-                          hintText={'Password'}
-                          hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
-                          key='password'
-                          style={styles.textfield}/>
-                      </div>
-                      {this.state.error ?
-                        <div style={{color: 'red'}}>
-                          This account already exists, you should login
-                        </div>
-                        :
-                        null
-                      }
-                      <div style={{width: '100%', boxSizing: 'border-box', paddingLeft: '50px', backfaceVisibility: 'inherit'
-                        , paddingRight: '50px', borderRadius: '10px', paddingBottom: '20px'}}>
-                        <RaisedButton fullWidth={true}
-                          backgroundColor={this.state.email && this.state.password && this.state.name ?  '#E55749' : '#C5C8C7'}
-                          buttonStyle={{borderRadius: '6px'}}
-                          onTouchTap={this.handleCreateAccount}
-                          labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center', height: '100%'}}
-                          labelColor='white' label='Complete' style={{height: '50px'}}
-                          />
-                      </div>
+                 {this.state.type === 'signup' ?
 
-                </span>
+                  <span
+                    style={{display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      , flexDirection: 'column', height: '100%'}}>
+                        <Plant style={{marginBottom: '16px', height: '80px'}}/>
+                        <div style={{paddingBottom: '16px'}}>
+                          Create your Account
+                        </div>
+                        <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
+                          paddingRight: '50px', boxSizing: 'border-box'}}>
+                          <TextField fullWidth={true}
+                            inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                              paddingLeft: '12px',  boxSizing: 'border-box'}}
+                            underlineShow={false}
+                            hintText={'Name'}
+                            hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                            key='name'
+                            onChange={this.handleName}
+                            style={styles.textfield}/>
+                        </div>
+                        <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
+                          paddingRight: '50px', boxSizing: 'border-box'}}>
+                          <TextField fullWidth={true}
+                            inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                              paddingLeft: '12px',  boxSizing: 'border-box'}}
+                            underlineShow={false}
+                            hintText={'Email'}
+                            onChange={this.handleEmail}
+                            hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                            key='email'
+                            style={styles.textfield}/>
+                        </div>
+                        <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
+                          paddingRight: '50px', boxSizing: 'border-box'}}>
+                          <TextField fullWidth={true}
+                            inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                              paddingLeft: '12px',  boxSizing: 'border-box'}}
+                            underlineShow={false}
+                            errorStyle={{marginTop: 6}}
+                            errorText={this.state.badPassword ? "That password isn't very secure, try something else" : null}
+                            onChange={this.handlePassword}
+                            type='password'
+                            hintText={'Password'}
+                            hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                            key='password'
+                            style={styles.textfield}/>
+                        </div>
+                        {this.state.error ?
+                          <div style={{color: 'red'}}>
+                            This account already exists, you should login
+                          </div>
+                          :
+                          null
+                        }
+                        <div style={{width: '100%', boxSizing: 'border-box', paddingLeft: '50px', backfaceVisibility: 'inherit'
+                          , paddingRight: '50px', borderRadius: '10px', paddingBottom: '20px'}}>
+                          <RaisedButton fullWidth={true}
+                            backgroundColor={this.state.email && this.state.password && this.state.name && !this.state.badPassword ?  '#E55749' : '#C5C8C7'}
+                            buttonStyle={{borderRadius: '6px'}}
+                            onTouchTap={this.handleCreateAccount}
+                            labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center', height: '100%'}}
+                            labelColor='white' label='Complete' style={{height: '50px'}}
+                            />
+                        </div>
+
+                  </span> :
+                  <span
+                    style={{display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      , flexDirection: 'column', height: '100%'}}>
+                        <Spiral style={{marginBottom: '16px', height: '80px'}}/>
+                        <div style={{paddingBottom: '16px', fontFamily: 'Permanent Marker', fontSize: '20px'}}>
+                          Log In
+                        </div>
+
+                        <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
+                          paddingRight: '50px', boxSizing: 'border-box'}}>
+                          <TextField fullWidth={true}
+                            inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                              paddingLeft: '12px',  boxSizing: 'border-box'}}
+                            underlineShow={false}
+                            hintText={'Email'}
+                            onChange={this.handleEmail}
+                            hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                            key='email'
+                            style={styles.textfield}/>
+                        </div>
+                        <div style={{width: '100%', paddingLeft: '50px', paddingBottom: '16px',
+                          paddingRight: '50px', boxSizing: 'border-box'}}>
+                          <TextField fullWidth={true}
+                            inputStyle={{borderRadius: '6px', border: '1px solid #858987',
+                              paddingLeft: '12px',  boxSizing: 'border-box'}}
+                            underlineShow={false}
+                            onChange={this.handlePassword}
+                            type='password'
+                            hintText={'Password'}
+                            hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
+                            key='password'
+                            style={styles.textfield}/>
+                        </div>
+                        {this.state.error ?
+                          <div style={{color: 'red'}}>
+                            This account already exists, you should login
+                          </div>
+                          :
+                          null
+                        }
+                        <div style={{width: '100%', boxSizing: 'border-box', paddingLeft: '50px', backfaceVisibility: 'inherit'
+                          , paddingRight: '50px', borderRadius: '10px', paddingBottom: '20px'}}>
+                          <RaisedButton fullWidth={true}
+                            backgroundColor={this.state.email && this.state.password  ?  '#E55749' : '#C5C8C7'}
+                            buttonStyle={{borderRadius: '6px'}}
+                            onTouchTap={this.handleLogin}
+                            labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center', height: '100%'}}
+                            labelColor='white' label='Go' style={{height: '50px'}}
+                            />
+                        </div>
+
+                  </span>}
                 </span>
                 </div>
             </div>

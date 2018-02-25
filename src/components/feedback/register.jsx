@@ -157,7 +157,9 @@ export default class Register extends React.Component {
                   null :
 
                 <span>
-                  <img src={this.state.engagements[this.state.counter]['Volunteer Picture']}
+                  <img
+                    alt={`${this.state.engagements[this.state.counter].Name}`}
+                    src={this.state.engagements[this.state.counter]['Volunteer Picture']}
                     style={{height: '95vw', width: '95vw', objectFit: 'cover', position: 'relative'}}
                     />
                   {this.state.turnedUp === true ?
@@ -202,7 +204,9 @@ export default class Register extends React.Component {
             {this.state.counter + 1 >= this.state.engagements.length ?
               <AllDone/> :
             <span>
-              <img src={this.state.engagements[this.state.counter + 1]['Volunteer Picture']}
+              <img
+                alt={`${this.state.engagements[this.state.counter +1].Name}`}
+                src={this.state.engagements[this.state.counter + 1]['Volunteer Picture']}
                 style={{height: '95vw', width: '95vw', objectFit: 'cover', position: 'relative'}}
                 />
               <div style={{textAlign: 'left', padding: 16}}>

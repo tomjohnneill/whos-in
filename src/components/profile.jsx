@@ -201,12 +201,27 @@ export default class Profile extends React.Component {
   componentDidMount(props) {
     var worktoolsToken = localStorage.getItem('worktoolsToken') ?
       localStorage.getItem('worktoolsToken') : '05a797cd-8b31-4abe-b63b-adbf0952e2c7'
-    fetch('https://api.worktools.io/api/User/' + this.props.params._id + `/?api_token=${worktoolsToken}`)
+    var userId
+    var publicProfile = true
+    if (this.props.params._id) {
+      userId = this.props.params._id
+      if (localStorage.getItem('worktoolsID') === this.props.params._id) {
+        publicProfile = false
+      }
+    } else if (localStorage.getItem('worktoolsID')) {
+      userId = localStorage.getItem('worktoolsID')
+      publicProfile = false
+    } else {
+      userId = null
+    }
+    this.setState({userId: userId, publicProfile: publicProfile})
+    console.log(this.state)
+    fetch('https://api.worktools.io/api/User/' + userId + `/?api_token=${worktoolsToken}`)
       .then(response => response.json())
       .then(function(data) {
         var user = data[0]
         this.setState({user: user})
-        return fetch(`https://api.worktools.io/api/Engagement/?api_token=${worktoolsToken}&Volunteer=` + this.props.params._id);
+        return fetch(`https://api.worktools.io/api/Engagement/?api_token=${worktoolsToken}&Volunteer=` + userId);
       }.bind(this))
       .then(response => response.json())
       .then(data => this.setState({engagements: data, loading: false}))
@@ -255,14 +270,17 @@ export default class Profile extends React.Component {
           :
           <div style={{display: 'flex', justifyContent: 'center'}}>
             <div style={{display: 'flex' , paddingLeft: '10px', paddingTop: '60px',
-               width: '100%', paddingRight: '10px', maxWidth: '1100px'
-                ,boxSizing: 'border-box'}}>
-              <div>
+               width: '100%', paddingRight: '10px', maxWidth: '1400px'
+                ,boxSizing: 'border-box', flexWrap: 'wrap', justifyContent: 'center'}}>
+              <div style={{marginBottom: '50px'}}>
                 {this.state.user.Picture ?
                 <img style={{height: '200px', width: '200px', objectFit: 'cover', borderRadius: '4px'}}
                   src={this.state.user.Picture ? this.state.user.Picture : null}/>
                 :
-                <PhotoUpload changeImage={this.chamgeImage} userId={this.props.params._id}/>
+                !this.state.publicProfile ?
+                <PhotoUpload changeImage={this.chamgeImage} userId={this.state.userId}/>
+                :
+                <div style={{height: '200px', width: '200px', backgroundColor: '#DDDDDD'}}/>
                 }
                 <div style={styles.contactDetails}>
                   Email address
@@ -289,7 +307,8 @@ export default class Profile extends React.Component {
                   </div>
                 </div>
               </div>
-              <div style={{width: '400px', marginLeft: '50px'}}>
+              <div style={{maxWidth: '50px', width: '5%'}}/>
+              <div style={{minWidth: '350px', width: '30%', marginBottom: '50px'}}>
                 <div style={{display: 'flex'}}>
                   <div style={{width: '50%', textAlign: 'left', fontFamily: 'Permanent Marker', fontSize: '24px'}}>
                     Hey, I'm {this.state.user.Name.replace(/ .*/,'')}
@@ -299,18 +318,22 @@ export default class Profile extends React.Component {
                   </div>
                 </div>
                 <div style={{textAlign: 'left', marginTop: '6px'}}>
-                  Germany, Berlin - Joined in 2014
+                  {this.state.user.Location} - Joined in 2018
                 </div>
                 <div style={{display: 'flex', alignItems: 'left', marginTop: '6px', marginBottom: '50px'}}>
+                  {this.state.publicProfile ? null :
                   <FlatButton label='Edit Profile' labelStyle={{padding: '10px', color: '#65A1e7', fontFamily: 'Permanent Marker',
                       fontSize: '20px'}}
                       icon={<FontIcon className="fas fa-pencil-alt" style={{color: '#65A1e7'}}/>}
                        />
+                   }
 
                 </div>
-                <RecentlySupported worktoolsToken={worktoolsToken} userId={this.props.params._id}/>
+                <RecentlySupported worktoolsToken={worktoolsToken} userId={this.state.userId}/>
+
               </div>
-              <div style={{marginLeft: '50px', width: '400px'}}>
+              <div style={{maxWidth: '50px', width: '5%'}}/>
+              <div style={{minWidth: '350px', width: '40%'}}>
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                   Verified user <Tick color={'#3B9E74'} style={{height: '50px' , marginLeft: '10px'}}/>
 

@@ -1,28 +1,16 @@
 import React, {PropTypes} from 'react';
 import { IndexLink, Link, browserHistory } from 'react-router';
-import {grey200, grey500, grey100, amber500, blue200} from 'material-ui/styles/colors';
-import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
-import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
-import Badge from 'material-ui/Badge';
 import IconButton from 'material-ui/IconButton';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
-import MessageIcon from 'material-ui/svg-icons/communication/message';
-import DoneAll from 'material-ui/svg-icons/action/done-all';
 import MediaQuery from 'react-responsive';
-import TextField from 'material-ui/TextField';
 import Settings from 'material-ui/svg-icons/action/settings';
 import InfoOutline from 'material-ui/svg-icons/action/info';
 //import MessagingButton from '/imports/ui/components/messagingbutton.jsx';
-import {SignupModal} from './signupmodal.jsx';
 
 //import globalStyles from '/client/main.css';
 
@@ -41,14 +29,14 @@ const style = {
   appBar: {
     margin: '0px',
     boxShadow: 'inset 0px 1px 3px rgba(0,0,0.5), 0px 2px 4px, rgba(0,0,0.5)',
-    paddingLeft: '100px',
+    paddingLeft: '16px',
     backgroundColor: 'white',
     borderBottom: '1px solid #DBDBDB'
   },
   loggedInAppBar : {
     margin: '0px',
     boxShadow: 'inset 0px 1px 3px rgba(0,0,0.5), 0px 2px 4px, rgba(0,0,0.5)',
-    paddingLeft: '100px',
+    paddingLeft: '16px',
     background: 'linear-gradient(rgba(0,0,0,1), rgba(0,0,0,0.07))'
   },
   otherAnchor :{
@@ -98,6 +86,20 @@ export default class Navigation extends React.Component {
 
   }
 
+
+  componentDidMount(props) {
+    if (localStorage.getItem('worktoolsToken') && localStorage.getItem('worktoolsID')) {
+      var token = localStorage.getItem('worktoolsToken')
+      var userId = localStorage.getItem('worktoolsID')
+
+        fetch(`https://api.worktools.io/api/User/${userId}/?api_token=${token}`)
+
+        // Get user email (to then search to find user ID)
+
+        .then(response => response.json())
+        .then(data => this.setState({userPicture: data[0].Picture}))
+    }
+  }
 
 
   logout(e){
@@ -208,7 +210,7 @@ export default class Navigation extends React.Component {
 
   handleCreateProject = (e) => {
     e.preventDefault()
-    browserHistory.push('/create-project/1')
+    browserHistory.push('/create-project/0')
   }
 
   renderLayout() {
@@ -223,6 +225,10 @@ export default class Navigation extends React.Component {
           className={this.props.location === '/' && localStorage.getItem('worktoolsToken') ? 'loggedInAppBar' :'appbar'}
           iconElementRight={
                             <div style={{display: 'flex', alignItems: 'center'}}>
+                              <IconButton onTouchTap={() => browserHistory.push('/profile')}
+                                style={{padding: 0, height: 40, width: 40, marginRight: 16}}>
+                                <Avatar src={this.state.userPicture}/>
+                              </IconButton>
                             <MediaQuery minDeviceWidth = {700}>
                               {localStorage.getItem('worktoolsToken') && !window.location.pathname.includes('create-project') ?
                               <RaisedButton
@@ -266,10 +272,6 @@ export default class Navigation extends React.Component {
        >
 
          <Menu>
-           {
-             1 == 1 ? <MenuItem primaryText="Sign In" onTouchTap={this.handleModal}/> :
-             <MenuItem primaryText="Sign Out" onTouchTap={this.handleSignOut}/>
-           }
            <MenuItem primaryText="Terms &amp; Conditions"  onTouchTap={this.handleTerms}/>
            <MenuItem primaryText="Privacy Policy"  onTouchTap={this.handlePrivacyPolicy}/>
 
@@ -280,6 +282,25 @@ export default class Navigation extends React.Component {
     );
   }
   render () {
+    if (localStorage.getItem('worktoolsToken') && !localStorage.getItem('worktoolsID')) {
+      var token = localStorage.getItem('worktoolsToken')
+      fetch('https://api.worktools.io/api/_/users/?api_token=' + token)
+
+      // Get user record
+
+      .then(response => response.json())
+      .then(userData => {
+        console.log(userData)
+        fetch(`https://api.worktools.io/api/User/?api_token=${token}&Email=` + userData[0].email.replace('.3ws8e9',''))
+
+        // Get user email (to then search to find user ID)
+
+        .then(response => response.json())
+        .then(data => {console.log(data); localStorage.setItem('worktoolsID', data[0]._id)})
+        .catch(error => console.log(error))
+      })
+    }
+
     return(
     <div>
       {this.renderLayout()}

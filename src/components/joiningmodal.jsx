@@ -1,5 +1,5 @@
-import React , {PropTypes} from 'react';
-import {grey200, grey500, grey100, amber500, grey300, lightBlue50} from 'material-ui/styles/colors'
+import React from 'react';
+import {lightBlue50} from 'material-ui/styles/colors'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import MediaQuery from 'react-responsive';
 import Dialog from 'material-ui/Dialog';

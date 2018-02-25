@@ -22,7 +22,7 @@ const muiTheme = getMuiTheme({
     headerColor: '#65A1e7',
   },
   timePicker: {
-    headerColor: '##65A1e7',
+    headerColor: '#65A1e7',
   },
   fontFamily: 'Open Sans'
 });

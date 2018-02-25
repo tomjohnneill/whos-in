@@ -176,7 +176,7 @@ export function dateDiffInDays(a, b) {
 var worktoolsToken = localStorage.getItem('worktoolsToken') ? localStorage.getItem('worktoolsToken') :
   '05a797cd-8b31-4abe-b63b-adbf0952e2c7'
 
-class WhosIn extends React.Component{
+export class WhosIn extends React.Component{
   constructor(props) {
     super(props);
     this.state = {}
@@ -201,7 +201,7 @@ class WhosIn extends React.Component{
               <div style={{flex: 2, paddingLeft: '24px',display: 'flex', alignItems: 'center'}}>
                 <div>
                   <b>{eng['Volunteer Name']}</b> <br/>
-              Where from
+                {eng['Volunteer Location']}
               </div>
               </div>
               <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
@@ -226,10 +226,8 @@ export default class DesktopProject extends React.Component {
   }
 
   componentDidMount(props) {
-    console.log(this.state)
-    console.log(this.props)
     this.setState({project: this.props.project, charity: this.props.charity, loading: false})
-    console.log(this.state)
+
   }
 
   createEngagement = () => {
@@ -306,7 +304,7 @@ export default class DesktopProject extends React.Component {
 
   handleEditClick = (e) => {
     e.preventDefault()
-    browserHistory.push(`/pages/pledges/${ this.props.pledge.slug }/${ this.props.pledge._id }/edit` )
+    browserHistory.push(`/projects/${ this.props.pledge.slug }/${ this.props.pledge._id }/edit` )
   }
 
   handleUnpledge(_id, title, e) {
@@ -330,7 +328,7 @@ export default class DesktopProject extends React.Component {
 
   handleLetsGo = (e) => {
     e.preventDefault()
-    browserHistory.push('/create-project/1')
+    browserHistory.push('/create-project/0')
   }
 
   changeAnchorEl = (e) => {
@@ -470,7 +468,9 @@ console.log(this.props)
                           </div>
                         </div>
                       </div>
+                      {!this.props.joined ?
 
+                        <div>
                       <RaisedButton secondary={true} fullWidth={true}
                         labelStyle={{letterSpacing: '0.6px', fontWeight: 'bold',
                           fontFamily: 'Permanent Marker', fontSize: '18px'}}
@@ -479,15 +479,16 @@ console.log(this.props)
                         />
 
 
-
-                      <div>
                     <RaisedButton
 
                        primary={true} fullWidth={true}
                         labelStyle={{letterSpacing: '0.6px', fontWeight: 'bold', fontFamily: 'Permanent Marker', fontSize: '18px'}}
                        label="Join Now" onTouchTap={this.handleModal} />
+                     </div>
+                     :
+                     null}
 
-                      </div>
+
 
                     </div>
 
@@ -646,35 +647,6 @@ console.log(this.props)
               <div style={{height: '36px', borderBottom: 'solid 1px #DDDDDD'}}/>
               <h1 style={{fontFamily: 'Permanent Marker', textAlign: 'left'}}>Who's In?</h1>
               <li>
-
-
-
-                <ul style={{textAlign: 'left', alignItems: 'center', borderBottom: '1px solid #DDDDDD', height: '60px', fontSize: '10px', display: 'flex'}}>
-                  <Avatar src=''/>
-                  <div style={{flex: 2, paddingLeft: '24px',display: 'flex', alignItems: 'center'}}>
-                    <div>
-                      <b>Name</b> <br/>
-                  Where from
-                  </div>
-                  </div>
-                  <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
-                    2 minutes ago
-                  </div>
-                </ul>
-
-
-                <ul style={{textAlign: 'left', alignItems: 'center', borderBottom: '1px solid #DDDDDD', height: '60px', fontSize: '10px', display: 'flex'}}>
-                  <Avatar src=''/>
-                  <div style={{flex: 2, paddingLeft: '24px',display: 'flex', alignItems: 'center'}}>
-                    <div>
-                      <b>Name</b> <br/>
-                  Where from
-                  </div>
-                  </div>
-                  <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
-                    2 minutes ago
-                  </div>
-                </ul>
 
                 <WhosIn project={this.props.project}/>
 

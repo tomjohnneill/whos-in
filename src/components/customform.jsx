@@ -1,11 +1,5 @@
-import React , {PropTypes} from 'react';
-import {Link, browserHistory} from 'react-router';
-import {
-  Step,
-  Stepper,
-  StepLabel,
-  StepContent,
-} from 'material-ui/Stepper';
+import React from 'react';
+import {browserHistory} from 'react-router';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Subheader from 'material-ui/Subheader';
@@ -16,9 +10,8 @@ import {Tree1,Tree2, Tree3, Tree4, Embryo1, Embryo2, Embryo3, Embryo4} from './i
 
 
 import Dropzone from 'react-dropzone';
-import {grey200, grey500, grey100, amber500} from 'material-ui/styles/colors';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import FontIcon from 'material-ui/FontIcon';
+import {grey500} from 'material-ui/styles/colors';
+
 
 const styles = {
   question : {
@@ -46,7 +39,6 @@ export default class CustomForm extends React.Component{
     fetch('https://api.worktools.io/api/Option/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7&Question=' + id)
     .then(response => response.json())
     .then(newData => {console.log(newData);
-      var options = newData;
       const details = this.state.details
       details[index].options = newData
       this.setState({details: details})})

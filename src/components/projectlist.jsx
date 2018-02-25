@@ -57,15 +57,38 @@ export default class ProjectList extends React.Component{
   componentDidMount() {
       this.setState({ loading: true });
 
+      //Get IP address
+
       fetch('https://ident.me/.json')
       .then(response => response.json())
+
+      // Get location from ip address
+
       .then(function(data) {
         var ip = data
         console.log(data)
         return fetch('https://freegeoip.net/json/' + data.address)
       })
       .then(response => response.json())
-      .then(data => console.log(data))
+      .then(data => {
+        if (localStorage.getItem('worktoolsToken')) {
+          var token = localStorage.getItem('worktoolsToken')
+          var userId = localStorage.getItem('worktoolsID')
+
+
+          var body = {
+            'Location': data.city + ', ' + data.country_name
+          };
+              fetch(`https://api.worktools.io/api/User/${userId}/?api_token=${token}`, {
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                method: 'PATCH',
+                body: JSON.stringify(body)
+              })
+            }
+        } )
 
       fetch('https://api.worktools.io/api/Project/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7')
         .then(response => response.json())
@@ -81,7 +104,7 @@ export default class ProjectList extends React.Component{
       console.log(slug)
       console.log(e)
 
-      browserHistory.push('/pages/pledges/' + slug + '/' + id)
+      browserHistory.push('/projects/' + slug + '/' + id)
 
     }
 
@@ -204,7 +227,7 @@ export default class ProjectList extends React.Component{
                 key={project._id}
 
             children={
-                <Link to={'/pages/pledges/' + project.Name + '/' + project._id}>
+                <Link to={'/projects/' + project.Name + '/' + project._id}>
                   <div onTouchTap={(e) => this.handleTap(project._id, project.Name)} style={{cursor: 'pointer', height: '100%', width: 'auto', display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
 
 

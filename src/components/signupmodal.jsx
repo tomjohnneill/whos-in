@@ -1,15 +1,12 @@
-import React , {PropTypes} from 'react';
-import {grey200, grey500, grey100, amber500, grey300, lightBlue50} from 'material-ui/styles/colors'
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import MediaQuery from 'react-responsive';
+import React from 'react';
 import Dialog from 'material-ui/Dialog';
-import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import CircularProgress from 'material-ui/CircularProgress';
-import Subheader from 'material-ui/Subheader';
 import {Plant, Spiral} from './icons.jsx';
-import {Link, browserHistory} from 'react-router';
+import {grey500} from 'material-ui/styles/colors'
+
+var commonPassword = require('common-password');
 
 const styles = {
   number: {
@@ -44,6 +41,11 @@ export default  class SignupModal extends React.Component {
   }
 
   handlePassword = (e, newValue) => {
+    if (commonPassword(newValue)) {
+      this.setState({badPassword: true})
+    } else {
+      this.setState({badPassword: false})
+    }
     this.setState({password: newValue})
   }
 
@@ -84,6 +86,11 @@ export default  class SignupModal extends React.Component {
     .then(data => console.log(localStorage))
     .then(data => this.props.onComplete())
     .catch(error => this.setState({ error, loading: false }));
+
+    fetch(`https://api.worktools.io/api/User/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7&Email=${this.state.email}`)
+    .then(response => response.json())
+    .then(data => localStorage.setItem('worktoolsID', data[0]._id))
+    .catch(error => this.setState({ error}));
   }
 
   handleLogin = () => {
@@ -104,6 +111,11 @@ export default  class SignupModal extends React.Component {
     .then(data => console.log(localStorage))
     .then(data => this.props.onComplete())
     .catch(error => this.setState({ error, loading: false }));
+
+    fetch(`https://api.worktools.io/api/User/?api_token=05a797cd-8b31-4abe-b63b-adbf0952e2c7&Email=${this.state.email}`)
+    .then(response => response.json())
+    .then(data => localStorage.setItem('worktoolsID', data[0]._id))
+    .catch(error => this.setState({ error}));
   }
 
   handleSwitchType = (e) => {
@@ -173,6 +185,9 @@ export default  class SignupModal extends React.Component {
                       paddingLeft: '12px',  boxSizing: 'border-box'}}
                     underlineShow={false}
                     onChange={this.handlePassword}
+                    errorStyle={{marginTop: 6}}
+                    errorText={this.state.badPassword ? "That password isn't very secure, try something else" : null}
+                    onChange={this.handlePassword}
                     type='password'
                     hintText={'Password'}
                     hintStyle={{ paddingLeft: '12px', bottom: '8px'}}
@@ -182,9 +197,10 @@ export default  class SignupModal extends React.Component {
                 <div style={{width: '100%', boxSizing: 'border-box', backfaceVisibility: 'inherit'
                   ,borderRadius: '10px', paddingBottom: '20px'}}>
                   <RaisedButton fullWidth={true}
-                    backgroundColor={this.state.email && this.state.password && this.state.name ?  '#E55749' : '#C5C8C7'}
+                    backgroundColor={this.state.email && this.state.password && this.state.name && !this.state.badPassword ?  '#E55749' : '#C5C8C7'}
                     buttonStyle={{borderRadius: '6px'}}
-                    onTouchTap={this.handleCreateAccount}
+                    onClick={this.handleCreateAccount}
+
                     labelStyle={{textTransform: 'none',display: 'inline-flex', alignItems: 'center', height: '100%'}}
                     labelColor='white' label='Complete' style={{height: '50px'}}
                     />

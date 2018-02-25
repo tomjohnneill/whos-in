@@ -6,9 +6,9 @@ import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
 import Search from 'material-ui/svg-icons/action/search';
 import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 
 
-var worktoolsToken = localStorage.getItem('worktoolsToken')
 
 const styles = {
   textfield: {
@@ -26,6 +26,11 @@ const styles = {
     padding: '6px',
     fontWeight: 700
   }
+}
+
+function parseISOString(s) {
+  var b = s.split(/\D+/);
+  return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
 }
 
 export function changeImageAddress(file, size) {
@@ -52,6 +57,10 @@ export default class OrganisationLookup extends React.Component{
   componentDidMount(props) {
     this.loadPlacesApi()
   }
+
+  handleClose = () => {
+    this.setState({error: null});
+  };
 
    debounce = function(func, wait, immediate) {
   	var timeout;
@@ -128,10 +137,11 @@ export default class OrganisationLookup extends React.Component{
 
   handleNext = (e) => {
     e.preventDefault()
+    var worktoolsToken = localStorage.getItem('worktoolsToken')
     var basics = JSON.parse(localStorage.getItem('basics'))
     var story = JSON.parse(localStorage.getItem('story'))
     var coverPhoto = localStorage.getItem('coverPhoto')
-    var times = localStorage.getItem('times')
+    var times = JSON.parse(localStorage.getItem('times'))
     var body = {
       'Name': story.title,
       'Description': story.story,
@@ -232,12 +242,12 @@ export default class OrganisationLookup extends React.Component{
 
 
 
-
+    /*
     localStorage.removeItem('basics')
     localStorage.removeItem('story')
     localStorage.removeItem('times')
     localStorage.removeItem('coverPhoto')
-
+    */
   }
 
   handleFill = (e) => {
@@ -491,7 +501,16 @@ export default class OrganisationLookup extends React.Component{
                 </div>
               </div>
 
-
+              <Dialog
+                modal={false}
+                open={this.state.error ? true : false}
+                onRequestClose={this.handleClose}>
+                <b>Error:</b>
+                <br/>
+                {this.state.error ? this.state.error.toString() :null}
+                <br/><br/>
+                Try again, or contact us at help@whosin.io
+              </Dialog>
             </div>
           }
         </div>

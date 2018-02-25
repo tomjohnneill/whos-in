@@ -1,7 +1,7 @@
 import React , {PropTypes} from 'react';
 import Subheader from 'material-ui/Subheader';
 import {GridList, GridTile} from 'material-ui/GridList';
-import HexagonList from './hexagonlist.jsx';
+
 import {Link, browserHistory} from 'react-router';
 
 const styles = {

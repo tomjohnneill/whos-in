@@ -5,7 +5,6 @@ import App from './App.jsx';
 import registerServiceWorker from './registerServiceWorker';
 import Project from './components/project.jsx';
 import Home from './components/home.jsx';
-import NewProject from './components/newproject.jsx';
 import Profile from './components/profile.jsx';
 import CharityProfile from './components/charityprofile.jsx';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
@@ -25,6 +24,7 @@ import ProjectJoined from './components/projectjoined.jsx';
 import ProjectCreated from './components/create-project/projectcreated.jsx';
 import Why from './components/why.jsx';
 import Register from './components/feedback/register.jsx';
+import MiniWhy from './components/create-project/miniwhy.jsx';
 
 const rootElement = document.getElementById('root');
 
@@ -35,17 +35,17 @@ const rootElement = document.getElementById('root');
       <Route path='/why' component={Why}/>
       <Route path='/auth/linkedin/' component={LinkedInAuth}/>
       <Route path='/customform' component={CustomForm}/>
+      <Route path='/profile' component={Profile}/>
       <Route path='/form/formbuilder' component={FormBuilder}/>
       <Route path='/step/stepper' component={CreateProject}/>
       <Route path='/auto/autocomplete' component={CharityAutocomplete}/>
+      <Route path='/create-project/0' component={MiniWhy}/>
       <Route path='/create-project/1' component={Basics}/>
       <Route path='/create-project/2' component={DateAndTime}/>
       <Route path='/create-project/3' component={Story}/>
       <Route path='/create-project/4' component={UploadPhoto}/>
       <Route path='/create-project/summary/1' component={FirstSummary}/>
-      <Route path='/projects/new' component={NewProject}/>
       <Route path='/create-project/organisation' component={OrganisationLookup}/>
-      <Route path='/projects/:_id/:Name/edit' component={NewProject}/>
       <Route path='/projects/:pledge/:_id' component={Project}/>
       <Route path='/projects/:pledge/:_id/questions' component={CustomForm}/>
       <Route path='/projects/:pledge/:_id/joined' component={ProjectJoined}/>

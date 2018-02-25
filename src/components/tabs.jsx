@@ -10,6 +10,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Featured from './featured.jsx';
 import {changeImageAddress} from './desktopproject.jsx';
 import AllProjects from './allprojects.jsx';
+import MediaQuery from 'react-responsive';
 
 const styles = {
   selectedTab: {
@@ -36,6 +37,32 @@ const styles = {
     lineHeight: '16px',
     paddingLeft: '20px',
     paddingRight: '20px',
+
+  },
+  mobileSelectedTab: {
+    height: '60px',
+    backgroundColor: 'white',
+    color: '#FF9800',
+    textTransform: 'none',
+    fontSize: '16px',
+    letterSpacing: '0.4px',
+    lineHeight: '16px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+    fontWeight: 600
+  },
+  mobileTab: {
+    height: '60px',
+    fontFamily: 'Open Sans',
+    backgroundColor: 'white',
+    color: '#484848',
+    textTransform: 'none',
+
+    fontSize: '16px',
+    letterSpacing: '0.4px',
+    lineHeight: '16px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
 
   },
   textfield: {
@@ -119,6 +146,8 @@ export default class UserTabs extends React.Component {
         :
       <Home/>
         }
+
+        <MediaQuery minDeviceWidth={700}>
         <Tabs
           className='tab'
           style={{ paddingLeft: '100px', paddingRight: '100px'}}
@@ -152,6 +181,43 @@ export default class UserTabs extends React.Component {
               <ProjectList  id='block'/>
             </Tab>
           </Tabs>
+          </MediaQuery>
+
+          <MediaQuery maxDeviceWidth={700}>
+          <Tabs
+            className='tab'
+            style={{ paddingLeft: '10px', paddingRight: '10px'}}
+            tabItemContainerStyle={{height: '60px', backgroundColor: 'white', borderBottom: '1px solid #DDDDDD'}}
+              value={this.props.params.tab}
+              onChange={this.handleTwoTabClick}
+              inkBarStyle={{zIndex: 2, backgroundColor: '#FF9800',
+              left:this.state.inkBarLeft, width: '100px'}}
+            >
+
+              <Tab
+                onTouchTap={this.changeAnchorEl}
+                label="Featured"  buttonStyle={this.props.params.tab === 'projects' ||
+                !this.props.params.tab ? styles.mobileSelectedTab : styles.mobileTab} style={{width: 'auto', fontSize: '16px'}} value="projects">
+                <span>
+                  <ProjectList id='block'/>
+                </span>
+              </Tab>
+              <Tab
+                onTouchTap={this.changeAnchorEl}
+                label="Outdoor" buttonStyle={this.props.params.tab === 'profile' ?
+                styles.mobileSelectedTab : styles.mobileTab} style={{width: 'auto', fontSize: '16px'}} value="profile">
+                <span>
+                  <ProjectList id='block'/>
+                </span>
+              </Tab>
+              <Tab
+                onTouchTap={this.changeAnchorEl}
+                 label="Young People" buttonStyle={this.props.params.tab === 'charities' ?
+                styles.mobileSelectedTab : styles.mobileTab} style={{width: 'auto', fontSize: '16px'}} value="charities">
+                <ProjectList  id='block'/>
+              </Tab>
+            </Tabs>
+            </MediaQuery>
 
           <AllProjects/>
 

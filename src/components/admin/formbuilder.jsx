@@ -1,17 +1,13 @@
-import React , {PropTypes} from 'react'
+import React from 'react'
 import {List, ListItem} from 'material-ui/List';
 import TextField from 'material-ui/TextField';
-import {grey200, grey500, grey100, amber500, blue200} from 'material-ui/styles/colors';
+import {grey200, grey500} from 'material-ui/styles/colors';
 import Avatar from 'material-ui/Avatar';
-import FileFolder from 'material-ui/svg-icons/file/folder';
-import ActionAssignment from 'material-ui/svg-icons/action/assignment';
 import {blue500, yellow600, orange600, red600, blueGrey600} from 'material-ui/styles/colors';
-import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
-import ActionInfo from 'material-ui/svg-icons/action/info';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Edit from 'material-ui/svg-icons/content/add-circle-outline';
 import IconButton from 'material-ui/IconButton';
@@ -23,8 +19,7 @@ import RadioButtonIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import TextIcon from 'material-ui/svg-icons/content/text-format';
 import Photo from 'material-ui/svg-icons/image/photo';
 import LocationOn from 'material-ui/svg-icons/communication/location-on';
-import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardTitle} from 'material-ui/Card';
 import {Link, browserHistory} from 'react-router';
 import {
   Step,
@@ -745,7 +740,7 @@ export default class FormBuilder extends React.Component{
 
   handleBackClick = (e) => {
     e.preventDefault()
-    browserHistory.push('/pages/pledges/' + this.props.params.pledge +'/' + this.props.params._id)
+    browserHistory.push('/projects/' + this.props.params.pledge +'/' + this.props.params._id)
   }
 
   handleSubmit = (e) => {
